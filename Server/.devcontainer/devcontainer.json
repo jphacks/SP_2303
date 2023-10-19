@@ -1,0 +1,19 @@
+{
+  "name": "Python",
+  "dockerComposeFile": ["../docker-compose.local.yml"],
+  "service": "app",
+  "workspaceFolder": "/src",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.mypy-type-checker",
+        "donjayamanne.python-extension-pack"
+      ]
+    }
+  },
+  "remoteUser": "root"
+}
