@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/bottom_navigation.dart';
 import 'package:gohan_map/firebase_options.dart';
 import 'package:gohan_map/tab_navigator.dart';
+import 'package:gohan_map/utils/auth_state.dart';
 import 'package:gohan_map/utils/logger.dart';
 import 'package:gohan_map/utils/safearea_utils.dart';
 import 'package:gohan_map/view/all_post_page.dart';
@@ -34,20 +35,22 @@ void main() async {
 
 ///アプリケーションの最上位のウィジェット
 ///ウィジェットとは、画面に表示される要素のこと。
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //セーフエリア外の高さを保存しておく
     SafeAreaUtil.unSafeAreaBottomHeight = MediaQuery.of(context).padding.bottom;
     SafeAreaUtil.unSafeAreaTopHeight = MediaQuery.of(context).padding.top;
+    //ログイン済みか
+    final isSignedIn = ref.watch(isSignedInProvider);
     return MaterialApp(
       title: 'Gohan Map',
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(
+      home: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: LoginPage(),
+        body: (isSignedIn) ? const MainPage() : const LoginPage(),
       ),
       theme: ThemeData(
         fontFamily: (Platform.isAndroid) ? "SanFrancisco" : null,
