@@ -24,7 +24,7 @@ FastAPI のサーバーは起動状態になり、ホットリロードされま
 DB が起動した状態で以下のコマンドを実行する
 
 ```bash
-docker compose exec app poetry run alembic upgrade head
+docker compose run --rm app poetry run alembic upgrade head
 ```
 
 ### 本番環境
