@@ -1,6 +1,6 @@
 {
   "name": "Python",
-  "dockerComposeFile": ["../docker-compose.local.yml"],
+  "dockerComposeFile": ["../docker-compose.yml"],
   "service": "app",
   "workspaceFolder": "/src",
   "customizations": {

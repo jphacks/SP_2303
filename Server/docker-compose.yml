@@ -3,7 +3,7 @@ version: "3"
 services:
   app:
     build:
-      dockerfile: ./docker/fastapi/Dockerfile
+      dockerfile: ./docker/fastapi/local/Dockerfile
       context: .
     command: "bash -c 'poetry install --no-root && poetry run uvicorn main:app --host 0.0.0.0 --reload'"
     volumes:
