@@ -11,7 +11,7 @@ Poetry
 - firebaseAdminKey.json をルートに配置する(開発者に相談)
 
 ```bash
-docker compose -f docker-compose.local.yml up -d
+docker compose up -d
 ```
 
 ### 開発環境の起動方法 （devcontainer)
@@ -24,5 +24,15 @@ FastAPI のサーバーは起動状態になり、ホットリロードされま
 DB が起動した状態で以下のコマンドを実行する
 
 ```bash
-docker compose -f docker-compose.local.yml exec app poetry run alembic upgrade head
+docker compose run --rm app poetry run alembic upgrade head
+```
+
+### 本番環境
+
+- .env と firebaseAdminKey.json の設定
+
+```bash
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml run --rm app poetry run alembic upgrade head
 ```

@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  nginx:
+    image: steveltn/https-portal:1
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - app
+    restart: always
+    environment:
+      DOMAINS: ${DOMAINS}
+      STAGE: ${STAGE}
+    volumes:
+      - https-portal-data:/var/lib/https-portal
+  app:
+    build:
+      dockerfile: ./docker/fastapi/prod/Dockerfile
+      context: .
+    volumes:
+      - .:/src
+    depends_on:
+      - db
+  db:
+    container_name: postgres
+    image: postgres:16
+    restart: always
+    volumes:
+      - db_store:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+volumes:
+  db_store:
+  https-portal-data:
