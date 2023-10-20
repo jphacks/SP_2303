@@ -18,8 +18,6 @@ services:
     build:
       dockerfile: ./docker/fastapi/prod/Dockerfile
       context: .
-    volumes:
-      - .:/src
     depends_on:
       - db
   db:
