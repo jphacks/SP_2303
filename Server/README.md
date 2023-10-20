@@ -11,7 +11,7 @@ Poetry
 - firebaseAdminKey.json をルートに配置する(開発者に相談)
 
 ```bash
-docker compose -f docker-compose.local.yml up -d
+docker compose -f docker-compose.local.yml up -d --build
 ```
 
 ### 開発環境の起動方法 （devcontainer)
@@ -25,4 +25,17 @@ DB が起動した状態で以下のコマンドを実行する
 
 ```bash
 docker compose -f docker-compose.local.yml exec app poetry run alembic upgrade head
+```
+
+### formatが効かない時
+
+dockerに入る必要があります。
+
+```bash
+docker compose -f docker-compose.local.yml exec app poetry run alembic upgrade head
+```
+
+```bash
+poetry shell
+poe format
 ```
