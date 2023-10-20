@@ -1,30 +1,35 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/bottom_navigation.dart';
-import 'package:gohan_map/colors/app_colors.dart';
+import 'package:gohan_map/firebase_options.dart';
 import 'package:gohan_map/tab_navigator.dart';
 import 'package:gohan_map/utils/logger.dart';
 import 'package:gohan_map/utils/safearea_utils.dart';
 import 'package:gohan_map/view/all_post_page.dart';
 import 'package:gohan_map/view/character_page.dart';
+import 'package:gohan_map/view/login_page.dart';
 import 'package:gohan_map/view/map_page.dart';
 import 'package:gohan_map/view/swipeui_page.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// アプリが起動したときに呼ばれる
-void main() {
+void main() async {
   logger.i("start application!");
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.white,
   ));
+
   // スプラッシュ画面をロードが終わるまで表示する
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  runApp(const MyApp());
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 ///アプリケーションの最上位のウィジェット
@@ -42,7 +47,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const Scaffold(
         resizeToAvoidBottomInset: false,
-        body: MainPage(),
+        body: LoginPage(),
       ),
       theme: ThemeData(
         fontFamily: (Platform.isAndroid) ? "SanFrancisco" : null,
