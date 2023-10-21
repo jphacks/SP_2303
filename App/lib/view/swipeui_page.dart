@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/Material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gohan_map/component/app_rating_bar.dart';
 
 class SwipeUIPage extends StatefulWidget {
   const SwipeUIPage({
@@ -17,55 +18,70 @@ class SwipeUIPageState extends State<SwipeUIPage> {
   final AppinioSwiperController controller = AppinioSwiperController();
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 100,
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: AppinioSwiper(
-              backgroundCardsCount: 3,
-              swipeOptions: const AppinioSwipeOptions.all(),
-              unlimitedUnswipe: true,
-              controller: controller,
-              unswipe: _unswipe,
-              onSwiping: (AppinioSwiperDirection direction) {
-                debugPrint(direction.toString());
-              },
-              onSwipe: _swipe,
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 25,
-                top: 50,
-                bottom: 40,
-              ),
-              onEnd: _onEnd,
-              cardsCount: candidates.length,
-              cardsBuilder: (BuildContext context, int index) {
-                return ExampleCard(candidate: candidates[index]);
-              },
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
             children: [
               const SizedBox(
-                width: 80,
+                height: 20,
               ),
-              swipeLeftButton(controller),
+              const Text(
+                "今の気分に合ってる？",
+                style: TextStyle(
+                  color: CupertinoColors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(
-                width: 20,
+                height: 10,
               ),
-              swipeRightButton(controller),
-              const SizedBox(
-                width: 20,
+              const Text(
+                "左右にスワイプして気になるお店を選びましょう",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: CupertinoColors.black,
+                ),
               ),
-              unswipeButton(controller),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: AppinioSwiper(
+                  backgroundCardsCount: 3,
+                  swipeOptions:
+                      const AppinioSwipeOptions.symmetric(horizontal: true),
+                  unlimitedUnswipe: true,
+                  controller: controller,
+                  unswipe: _unswipe,
+                  onSwipe: _swipe,
+                  padding: const EdgeInsets.only(
+                    left: 25,
+                    right: 25,
+                    top: 20,
+                    bottom: 40,
+                  ),
+                  onEnd: _onEnd,
+                  cardsCount: candidates.length,
+                  cardsBuilder: (BuildContext context, int index) {
+                    return AnonymousPostCard(candidate: candidates[index]);
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Wrap(
+                  spacing: 16,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    swipeLeftButton(controller),
+                    swipeRightButton(controller),
+                    unswipeButton(controller),
+                  ],
+                ),
+              )
             ],
-          )
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -89,10 +105,10 @@ class SwipeUIPageState extends State<SwipeUIPage> {
   }
 }
 
-class ExampleCard extends StatelessWidget {
-  final ExampleCandidateModel candidate;
+class AnonymousPostCard extends StatelessWidget {
+  final CandidateModel candidate;
 
-  const ExampleCard({
+  const AnonymousPostCard({
     Key? key,
     required this.candidate,
   }) : super(key: key);
@@ -115,19 +131,22 @@ class ExampleCard extends StatelessWidget {
       alignment: Alignment.center,
       child: Column(
         children: [
-          Flexible(
+          Expanded(
             child: Container(
               decoration: BoxDecoration(
-                gradient: candidate.color,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(10),
+                ),
+                image: DecorationImage(
+                  image: candidate.img!.image,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(15),
+            width: double.infinity,
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
@@ -135,41 +154,21 @@ class ExampleCard extends StatelessWidget {
                 bottomRight: Radius.circular(10),
               ),
             ),
+            //左寄せ用
             child: Row(
               children: [
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      candidate.name!,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    IgnorePointer(
+                      ignoring: true,
+                      child: AppRatingBar(
+                        initialRating: 4,
+                        onRatingUpdate: (rating) {},
+                        itemSize: 20,
                       ),
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      candidate.job!,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      candidate.city!,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 15,
-                      ),
-                    )
                   ],
                 ),
               ],
@@ -181,121 +180,67 @@ class ExampleCard extends StatelessWidget {
   }
 }
 
-class ExampleCandidateModel {
-  String? name;
-  String? job;
-  String? city;
-  LinearGradient? color;
+class CandidateModel {
+  String? googlePlaceId;
+  Image? img;
+  double? star;
 
-  ExampleCandidateModel({
-    this.name,
-    this.job,
-    this.city,
-    this.color,
+  CandidateModel({
+    this.googlePlaceId,
+    this.img,
+    this.star,
   });
 }
 
-List<ExampleCandidateModel> candidates = [
-  ExampleCandidateModel(
-    name: 'Eight, 8',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientPink,
+List<CandidateModel> candidates = [
+  CandidateModel(
+    googlePlaceId: "xxxxxxxx",
+    img: Image.network(
+      "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
+      fit: BoxFit.cover,
+    ),
+    star: 5,
   ),
-  ExampleCandidateModel(
-    name: 'Seven, 7',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientBlue,
+  CandidateModel(
+    googlePlaceId: "xxxxxxxx",
+    img: Image.network(
+      "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
+      fit: BoxFit.cover,
+    ),
+    star: 4,
   ),
-  ExampleCandidateModel(
-    name: 'Six, 6',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientPurple,
+  CandidateModel(
+    googlePlaceId: "xxxxxxxx",
+    img: Image.network(
+      "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
+      fit: BoxFit.cover,
+    ),
+    star: 4.5,
   ),
-  ExampleCandidateModel(
-    name: 'Five, 5',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientRed,
+  CandidateModel(
+    googlePlaceId: "xxxxxxxx",
+    img: Image.network(
+      "https://www.kajiken.biz/wp/wp-content/uploads/2017/06/sakae_shio-480x480.jpg",
+      fit: BoxFit.cover,
+    ),
+    star: 4,
   ),
-  ExampleCandidateModel(
-    name: 'Four, 4',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientPink,
-  ),
-  ExampleCandidateModel(
-    name: 'Three, 3',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientBlue,
-  ),
-  ExampleCandidateModel(
-    name: 'Two, 2',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientPurple,
-  ),
-  ExampleCandidateModel(
-    name: 'One, 1',
-    job: 'Manager',
-    city: 'Town',
-    color: gradientRed,
+  CandidateModel(
+    googlePlaceId: "xxxxxxxx",
+    img: Image.network(
+      "https://blogimg.goo.ne.jp/image/upload/f_auto,q_auto,t_image_sp_entry/v1/user_image/23/5f/a06d2be63d977115f3a78ce1e5ea2f92.jpg",
+      fit: BoxFit.cover,
+    ),
+    star: 4.5,
   ),
 ];
 
-const LinearGradient gradientRed = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [
-    Color(0xFFFF3868),
-    Color(0xFFFFB49A),
-  ],
-);
 
-const LinearGradient gradientPurple = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [
-    Color(0xFF736EFE),
-    Color(0xFF62E4EC),
-  ],
-);
-
-const LinearGradient gradientBlue = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [
-    Color(0xFF0BA4E0),
-    Color(0xFFA9E4BD),
-  ],
-);
-
-const LinearGradient gradientPink = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [
-    Color(0xFFFF6864),
-    Color(0xFFFFB92F),
-  ],
-);
-
-const LinearGradient kNewFeedCardColorsIdentityGradient = LinearGradient(
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  colors: [
-    Color(0xFF7960F1),
-    Color(0xFFE1A5C9),
-  ],
-);
-
-class ExampleButton extends StatelessWidget {
+class SwipeUIButton extends StatelessWidget {
   final Function onTap;
   final Widget child;
 
-  const ExampleButton({
+  const SwipeUIButton({
     required this.onTap,
     required this.child,
     Key? key,
@@ -312,11 +257,11 @@ class ExampleButton extends StatelessWidget {
 
 //swipe card to the right side
 Widget swipeRightButton(AppinioSwiperController controller) {
-  return ExampleButton(
+  return SwipeUIButton(
     onTap: () => controller.swipeRight(),
     child: Container(
       height: 60,
-      width: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: CupertinoColors.activeGreen,
         borderRadius: BorderRadius.circular(50),
@@ -329,11 +274,21 @@ Widget swipeRightButton(AppinioSwiperController controller) {
           ),
         ],
       ),
-      alignment: Alignment.center,
-      child: const Icon(
-        Icons.check,
-        color: CupertinoColors.white,
-        size: 40,
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.check_rounded,
+            color: CupertinoColors.white,
+            size: 30,
+          ),
+          Text("気になる！",
+              style: TextStyle(
+                color: CupertinoColors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              )),
+        ],
       ),
     ),
   );
@@ -341,11 +296,11 @@ Widget swipeRightButton(AppinioSwiperController controller) {
 
 //swipe card to the left side
 Widget swipeLeftButton(AppinioSwiperController controller) {
-  return ExampleButton(
+  return SwipeUIButton(
     onTap: () => controller.swipeLeft(),
     child: Container(
       height: 60,
-      width: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: const Color(0xFFFF3868),
         borderRadius: BorderRadius.circular(50),
@@ -358,11 +313,21 @@ Widget swipeLeftButton(AppinioSwiperController controller) {
           ),
         ],
       ),
-      alignment: Alignment.center,
-      child: const Icon(
-        Icons.close,
-        color: CupertinoColors.white,
-        size: 40,
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.close,
+            color: CupertinoColors.white,
+            size: 30,
+          ),
+          Text("気分じゃない",
+              style: TextStyle(
+                color: CupertinoColors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              )),
+        ],
       ),
     ),
   );
@@ -370,7 +335,7 @@ Widget swipeLeftButton(AppinioSwiperController controller) {
 
 //unswipe card
 Widget unswipeButton(AppinioSwiperController controller) {
-  return ExampleButton(
+  return SwipeUIButton(
     onTap: () => controller.unswipe(),
     child: Container(
       height: 60,
