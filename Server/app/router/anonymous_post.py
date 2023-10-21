@@ -1,6 +1,3 @@
-import os
-import uuid
-
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
@@ -39,7 +36,7 @@ async def create_anonymous_post(
     longitude: float = Form(),
     latitude: float = Form(),
     star: float = Form(),
-    imageList: list[UploadFile] = Form(...),
+    imageList: list[UploadFile] = Form(),
     db: Session = Depends(get_db),
     cred: UserInfo = Depends(get_current_user),
 ) -> None:
@@ -48,19 +45,6 @@ async def create_anonymous_post(
     shop = anonymous_post.update_google_map_shop_by_shopId(
         db, googleMapShopId, longitude, latitude
     )
-    # postされた画像にuuidを付与して保存
-    output_directory = "./app/media/images/anonymous-post"
-    filenames = []
-    for index, image in enumerate(imageList):
-        content = await image.read()
-        unique_filename = f"{uuid.uuid4()}{os.path.splitext(image.filename)[1]}"
-        save_path = os.path.join(output_directory, unique_filename)
-        filenames.append(unique_filename)
-        logger.debug(save_path)
-
-        with open(save_path, "wb") as f:
-            f.write(content)
-
     # 匿名投稿の追加
     post = anonymous_post.create_anonymous_post(
         db,
@@ -70,7 +54,7 @@ async def create_anonymous_post(
         star,
     )
     # 匿名投稿の画像の追加
-    anonymous_post.create_anonymous_post_image(db, post.id, filenames)
+    await anonymous_post.create_anonymous_post_image(db, post.id, imageList)
     logger.debug("request: POST /api/anonymous-post")
 
 

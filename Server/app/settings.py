@@ -7,3 +7,4 @@ PUBLIC_MEDIA_IMAGE_PATH = os.path.join(PUBLIC_MEDIA_PATH, "images/")
 PUBLIC_MEDIA_IMAGE_ANONYMOUS_POST_PATH = os.path.join(
     PUBLIC_MEDIA_IMAGE_PATH, "anonymous-post/"
 )
+SYETEM_MEDIA_PATH = "./app/media/images/anonymous-post"

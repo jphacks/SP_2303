@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from datetime import datetime
 
 from fastapi import UploadFile
@@ -6,6 +9,10 @@ from sqlalchemy.orm import Session
 from app.models.anonymous_post import AnonymousPost
 from app.models.anonymous_post_image import AnonymousPostImage
 from app.models.google_map_shop import GoogleMapShop
+from app.settings import SYETEM_MEDIA_PATH
+from app.utils.logger import get_logger
+
+logger = get_logger()
 
 
 def fetch_anonymous_post_by_uid(db: Session, uid: str) -> list[AnonymousPost]:
@@ -60,12 +67,21 @@ def create_anonymous_post(
     return post
 
 
-def create_anonymous_post_image(
+async def create_anonymous_post_image(
     db: Session,
     anonymousPostId: int,
-    filenames: list[str],
-) -> AnonymousPost:
-    for filename in filenames:
+    imageList: list[UploadFile],
+) -> None:
+    logger.debug(imageList)
+    print("test!!")
+
+    for image in imageList:
+        content = await image.read()
+        filename = f"{uuid.uuid4()}{os.path.splitext(image.filename)[1]}"
+        save_path = os.path.join(SYETEM_MEDIA_PATH, filename)
+        with open(save_path, "wb") as f:
+            f.write(content)
+
         post = AnonymousPostImage(
             anonymousPostId=anonymousPostId,
             fileName=filename,
@@ -101,7 +117,18 @@ def fetch_anonymous_post_by_uid_timelineId(
 def delete_anonymous_post_by_uid_timelineId(
     db: Session, uid: str, timelineId: int
 ) -> None:
-    # TODO: 画像ファイルの削除を同時にする
+    post = (
+        db.query(AnonymousPost)
+        .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
+        .first()
+    )
+    imageList = post.anonymousPostImages
+    for image in imageList:
+        # ファイルを削除
+        file_path = os.path.join(SYETEM_MEDIA_PATH, image.fileName)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
     db.query(AnonymousPost).filter(
         AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId
     ).delete()
