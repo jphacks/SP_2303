@@ -32,7 +32,7 @@ docker compose -f docker-compose.local.yml exec app poetry run alembic upgrade h
 dockerに入る必要があります。
 
 ```bash
-docker compose -f docker-compose.local.yml exec app poetry run alembic upgrade head
+docker compose -f docker-compose.local.yml exec app bash
 ```
 
 ```bash
