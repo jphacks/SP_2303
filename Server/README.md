@@ -8,7 +8,6 @@ Poetry
 ### 開発環境の起動方法
 
 - .env.sample を.env にコピーする
-- firebaseAdminKey.json をルートに配置する(開発者に相談)
 
 ```bash
 docker compose up -d
@@ -29,7 +28,7 @@ docker compose run --rm app poetry run alembic upgrade head
 
 ### 本番環境
 
-- .env と firebaseAdminKey.json の設定
+- .env の設定
 
 ```bash
 docker compose -f docker-compose.prod.yml build
