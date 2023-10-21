@@ -19,10 +19,17 @@ class AuthService {
     return FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  Future<void> signOut() async {
-    await GoogleSignIn(
-      clientId: DefaultFirebaseOptions.currentPlatform.iosClientId,
-    ).signOut();
-    await FirebaseAuth.instance.signOut();
+  Future<int> signOut() async {
+    try {
+      await GoogleSignIn(
+        clientId: DefaultFirebaseOptions.currentPlatform.iosClientId,
+      ).signOut();
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      print("ログアウトに失敗しました: $e");
+      return 1;
+      // ここに失敗時の追加処理を書く（例: ユーザーに通知する、ログを記録するなど）
+    }
+    return 0;
   }
 }

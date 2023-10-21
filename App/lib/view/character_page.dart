@@ -28,13 +28,7 @@ class CharacterPageState extends ConsumerState<CharacterPage> {
             child: ElevatedButton(
               onPressed: () async {
                 final service = AuthService();
-                service.signOut().then((value) => {
-                      Navigator.of(context, rootNavigator: true)
-                          .pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                              (route) => false)
-                    });
+                service.signOut().then((result) => onLogout(result, context));
               },
               child: const Center(child: Text("ログアウト")),
             ),
@@ -42,6 +36,30 @@ class CharacterPageState extends ConsumerState<CharacterPage> {
         ],
       ),
     );
+  }
+
+  Set<Future<dynamic>> onLogout(int result, BuildContext context) {
+    return {
+      if (result == 0)
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+            (route) => false),
+      if (result == 1)
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("ログアウトに失敗しました"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("OK"))
+                ],
+              );
+            })
+    };
   }
 
   //タブを選択した時に行う再描画処理

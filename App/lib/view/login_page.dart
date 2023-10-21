@@ -32,7 +32,7 @@ class LoginPage extends StatelessWidget {
                   ],
                 ),
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(100),
+                  bottom: Radius.circular(40),
                 ),
               ),
               child: Center(
@@ -59,13 +59,13 @@ class LoginPage extends StatelessWidget {
                 margin: EdgeInsets.only(
                   top: MediaQuery.of(context).size.height / 2 - 300,
                 ),
-                width: min(MediaQuery.of(context).size.width - 48, 320),
+                width: min(MediaQuery.of(context).size.width - 48, 340),
                 decoration: BoxDecoration(
                   color: AppColors.whiteColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black12,
+                      color: Color.fromARGB(102, 211, 209, 209),
                       blurRadius: 10,
                       offset: Offset(0, 10),
                     ),
@@ -96,7 +96,7 @@ class LoginPage extends StatelessWidget {
                         height: 36,
                       ),
                       const Text(
-                        "このアプリを使用するには\nGoogleアカウントでログインする必要があります",
+                        "このアプリを使用するにはGoogleアカウントでログインする必要があります",
                       ),
                       const SizedBox(height: 16),
                       SignInButton(
