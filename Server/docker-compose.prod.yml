@@ -18,6 +18,8 @@ services:
     build:
       dockerfile: ./docker/fastapi/prod/Dockerfile
       context: .
+    env_file:
+      - .env
     depends_on:
       - db
   db:
