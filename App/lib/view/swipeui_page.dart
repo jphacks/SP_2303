@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/Material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_rating_bar.dart';
 
 class SwipeUIPage extends StatefulWidget {
@@ -16,6 +17,7 @@ class SwipeUIPage extends StatefulWidget {
 
 class SwipeUIPageState extends State<SwipeUIPage> {
   final AppinioSwiperController controller = AppinioSwiperController();
+  int nowIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,8 +69,9 @@ class SwipeUIPageState extends State<SwipeUIPage> {
                   },
                 ),
               ),
+              swipeProgressBar(),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
                 child: Wrap(
                   spacing: 16,
                   alignment: WrapAlignment.center,
@@ -86,13 +89,55 @@ class SwipeUIPageState extends State<SwipeUIPage> {
     );
   }
 
+  TweenAnimationBuilder<double> swipeProgressBar() {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      tween: Tween<double>(
+        begin: 0,
+        end: (nowIndex / candidates.length).toDouble(),
+      ),
+      builder: (context, value, _) => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColors.whiteColor,
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: value,
+            color: AppColors.primaryColor,
+            backgroundColor: AppColors.primaryColor.withOpacity(0.2),
+            minHeight: 10,
+          ),
+        ),
+      ),
+    );
+  }
+
   void reload() {}
 
   void _swipe(int index, AppinioSwiperDirection direction) {
+    setState(() {
+      nowIndex = index;
+    });
     log("the card was swiped to the: " + direction.name);
   }
 
   void _unswipe(bool unswiped) {
+    setState(() {
+      nowIndex -= 1;
+    });
     if (unswiped) {
       log("SUCCESS: card was unswiped");
     } else {
