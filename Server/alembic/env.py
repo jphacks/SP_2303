@@ -13,10 +13,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from app.db import DATABASE_URL, Base
+from app.db import Base
 from app.models.anonymous_post import AnonymousPost
 from app.models.anonymous_post_image import AnonymousPostImage
 from app.models.google_map_shop import GoogleMapShop
+from app.settings import DATABASE_URL
 
 target_metadata = Base.metadata
 

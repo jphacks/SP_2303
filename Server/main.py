@@ -1,11 +1,11 @@
 import firebase_admin
 from fastapi import FastAPI
-from firebase_admin import credentials
 
 from app.router import anonymous_post, swipe
+from app.settings import FIREBASE_CONFIG
 
 ## 初期化 ##
-firebase_admin.initialize_app(credentials.Certificate("./firebaseAdminKey.json"))
+firebase_admin.initialize_app(firebase_admin.credentials.Certificate(FIREBASE_CONFIG))
 
 app = FastAPI()
 

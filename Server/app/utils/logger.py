@@ -1,9 +1,11 @@
 from logging import DEBUG, INFO, Formatter, Handler, Logger, StreamHandler, getLogger
 
+from app import settings
+
 
 def get_logger() -> Logger:
     logger = getLogger("gohan_map")
-    logger = _set_handler(logger, StreamHandler(), True)
+    logger = _set_handler(logger, StreamHandler(), settings.DEBUG)
     logger.setLevel(DEBUG)
     logger.propagate = False
     return logger
