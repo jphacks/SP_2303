@@ -5,7 +5,7 @@ part 'auth_state.g.dart';
 
 @Riverpod(keepAlive: true)
 Stream<User?> userChanges(UserChangesRef ref) {
-  return FirebaseAuth.instance.authStateChanges();
+  return FirebaseAuth.instance.idTokenChanges();
 }
 
 ///ユーザ
