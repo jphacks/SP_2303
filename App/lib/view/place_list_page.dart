@@ -24,7 +24,7 @@ class _PlaceListPageState extends State<PlaceListPage>
     with TickerProviderStateMixin {
   bool isLoadingPlaceApi = false;
   List<Shop>? allShops;
-  ToggleState toggleState = ToggleState.wantToGo; //行った店 or 行ってみたい店
+  ToggleState toggleState = ToggleState.visited; //行った店 or 行ってみたい店
 
   @override
   void initState() {
