@@ -24,7 +24,7 @@ class _PlaceListPageState extends State<PlaceListPage>
     with TickerProviderStateMixin {
   bool isLoadingPlaceApi = false;
   List<Shop>? allShops;
-  ToggleState toggleState = ToggleState.wantToGo; //行った店 or 行ってみたい店
+  ToggleState toggleState = ToggleState.visited; //行った店 or 行ってみたい店
 
   @override
   void initState() {
@@ -69,10 +69,7 @@ class _PlaceListPageState extends State<PlaceListPage>
               child: Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: CupertinoSlidingSegmentedControl(
-                  backgroundColor: AppColors.greyColor,
                   thumbColor: AppColors.whiteColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                   groupValue: toggleState,
                   onValueChanged: (ToggleState? value) {
                     setState(() {
@@ -143,7 +140,10 @@ class ListResultArea extends StatelessWidget {
         if (!isLoading && shopList.isEmpty)
           const Align(
             alignment: Alignment.center,
-            child: Text("登録された店舗はありません"),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text("登録された店舗はありません"),
+            ),
           ),
         for (var shop in filteredShops) ...[
           Card(

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1083179477798-md5nf0iier4ug1nd93hr435e736214nb.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1083179477798-md5nf0iier4ug1nd93hr435e736214nb</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1083179477798-m9p9k2ufeohc1ljrdqqgeks1kltj1e02.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCD898uh8rZ2ebXsIOE7RTaWUnlSCWHBC4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1083179477798</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.gohanMap</string>
+	<key>PROJECT_ID</key>
+	<string>gohan-map-e09bd</string>
+	<key>STORAGE_BUCKET</key>
+	<string>gohan-map-e09bd.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1083179477798:ios:c96a80867b5ba3bb32afe7</string>
+</dict>
+</plist>
