@@ -6,6 +6,7 @@ import 'package:flutter/Material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_rating_bar.dart';
+import 'package:gohan_map/view/swipe_result_page.dart';
 
 class SwipeUIPage extends StatefulWidget {
   const SwipeUIPage({
@@ -18,9 +19,58 @@ class SwipeUIPage extends StatefulWidget {
 
 class SwipeUIPageState extends State<SwipeUIPage> {
   final AppinioSwiperController controller = AppinioSwiperController();
+  List<CandidateModel> goodCandidates = [];
   int nowIndex = 0;
   bool isSwipingRight = false;
   bool isSwipingLeft = false;
+  List<CandidateModel> candidates = [];
+  @override
+  void initState() {
+    candidates = [
+      CandidateModel(
+        googlePlaceId: "xxxxxxxx1",
+        img: Image.network(
+          "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
+          fit: BoxFit.cover,
+        ),
+        star: 5,
+      ),
+      CandidateModel(
+        googlePlaceId: "xxxxxxxx2",
+        img: Image.network(
+          "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
+          fit: BoxFit.cover,
+        ),
+        star: 4,
+      ),
+      CandidateModel(
+        googlePlaceId: "xxxxxxxx3",
+        img: Image.network(
+          "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
+          fit: BoxFit.cover,
+        ),
+        star: 4.5,
+      ),
+      CandidateModel(
+        googlePlaceId: "xxxxxxxx4",
+        img: Image.network(
+          "https://www.kajiken.biz/wp/wp-content/uploads/2017/06/sakae_shio-480x480.jpg",
+          fit: BoxFit.cover,
+        ),
+        star: 4,
+      ),
+      CandidateModel(
+        googlePlaceId: "xxxxxxxx5",
+        img: Image.network(
+          "https://blogimg.goo.ne.jp/image/upload/f_auto,q_auto,t_image_sp_entry/v1/user_image/23/5f/a06d2be63d977115f3a78ce1e5ea2f92.jpg",
+          fit: BoxFit.cover,
+        ),
+        star: 4.5,
+      ),
+    ];
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +109,6 @@ class SwipeUIPageState extends State<SwipeUIPage> {
                           const AppinioSwipeOptions.symmetric(horizontal: true),
                       unlimitedUnswipe: true,
                       controller: controller,
-                      unswipe: _unswipe,
                       onSwipe: _swipe,
                       onSwiping: (direction) {
                         if (direction == AppinioSwiperDirection.right) {
@@ -111,7 +160,6 @@ class SwipeUIPageState extends State<SwipeUIPage> {
                   children: [
                     swipeLeftButton(controller),
                     swipeRightButton(controller),
-                    unswipeButton(controller),
                   ],
                 ),
               )
@@ -244,30 +292,29 @@ class SwipeUIPageState extends State<SwipeUIPage> {
     );
   }
 
-  void reload() {}
-
+  //スワイプされたときに呼ばれる
   void _swipe(int index, AppinioSwiperDirection direction) {
     setState(() {
       nowIndex = index;
       isSwipingLeft = false;
       isSwipingRight = false;
     });
-    log("the card was swiped to the: " + direction.name);
-  }
-
-  void _unswipe(bool unswiped) {
-    setState(() {
-      nowIndex = math.max(0, nowIndex - 1);
-    });
-    if (unswiped) {
-      log("SUCCESS: card was unswiped");
-    } else {
-      log("FAIL: no card left to unswipe");
+    if (direction == AppinioSwiperDirection.right) {
+      goodCandidates.add(candidates[index - 1]);
     }
+    log("the card was swiped to the: " + direction.name);
   }
 
   void _onEnd() {
     log("end reached!");
+    for (var candidate in goodCandidates) {
+      log(candidate.googlePlaceId!);
+    }
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return SwipeResultPage(
+        candidates: goodCandidates,
+      );
+    }));
   }
 }
 
@@ -357,49 +404,6 @@ class CandidateModel {
     this.star,
   });
 }
-
-List<CandidateModel> candidates = [
-  CandidateModel(
-    googlePlaceId: "xxxxxxxx",
-    img: Image.network(
-      "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
-      fit: BoxFit.cover,
-    ),
-    star: 5,
-  ),
-  CandidateModel(
-    googlePlaceId: "xxxxxxxx",
-    img: Image.network(
-      "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
-      fit: BoxFit.cover,
-    ),
-    star: 4,
-  ),
-  CandidateModel(
-    googlePlaceId: "xxxxxxxx",
-    img: Image.network(
-      "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
-      fit: BoxFit.cover,
-    ),
-    star: 4.5,
-  ),
-  CandidateModel(
-    googlePlaceId: "xxxxxxxx",
-    img: Image.network(
-      "https://www.kajiken.biz/wp/wp-content/uploads/2017/06/sakae_shio-480x480.jpg",
-      fit: BoxFit.cover,
-    ),
-    star: 4,
-  ),
-  CandidateModel(
-    googlePlaceId: "xxxxxxxx",
-    img: Image.network(
-      "https://blogimg.goo.ne.jp/image/upload/f_auto,q_auto,t_image_sp_entry/v1/user_image/23/5f/a06d2be63d977115f3a78ce1e5ea2f92.jpg",
-      fit: BoxFit.cover,
-    ),
-    star: 4.5,
-  ),
-];
 
 class SwipeUIButton extends StatelessWidget {
   final Function onTap;
