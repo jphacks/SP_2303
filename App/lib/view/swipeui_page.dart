@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/Material.dart';
@@ -18,6 +19,8 @@ class SwipeUIPage extends StatefulWidget {
 class SwipeUIPageState extends State<SwipeUIPage> {
   final AppinioSwiperController controller = AppinioSwiperController();
   int nowIndex = 0;
+  bool isSwipingRight = false;
+  bool isSwipingLeft = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,25 +51,55 @@ class SwipeUIPageState extends State<SwipeUIPage> {
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
-                child: AppinioSwiper(
-                  backgroundCardsCount: 3,
-                  swipeOptions:
-                      const AppinioSwipeOptions.symmetric(horizontal: true),
-                  unlimitedUnswipe: true,
-                  controller: controller,
-                  unswipe: _unswipe,
-                  onSwipe: _swipe,
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 25,
-                    top: 20,
-                    bottom: 40,
-                  ),
-                  onEnd: _onEnd,
-                  cardsCount: candidates.length,
-                  cardsBuilder: (BuildContext context, int index) {
-                    return AnonymousPostCard(candidate: candidates[index]);
-                  },
+                child: Stack(
+                  children: [
+                    AppinioSwiper(
+                      backgroundCardsCount: 3,
+                      swipeOptions:
+                          const AppinioSwipeOptions.symmetric(horizontal: true),
+                      unlimitedUnswipe: true,
+                      controller: controller,
+                      unswipe: _unswipe,
+                      onSwipe: _swipe,
+                      onSwiping: (direction) {
+                        if (direction == AppinioSwiperDirection.right) {
+                          setState(() {
+                            isSwipingRight = true;
+                            isSwipingLeft = false;
+                          });
+                        } else if (direction == AppinioSwiperDirection.left) {
+                          setState(() {
+                            isSwipingRight = false;
+                            isSwipingLeft = true;
+                          });
+                        } else {
+                          setState(() {
+                            isSwipingRight = false;
+                            isSwipingLeft = false;
+                          });
+                        }
+                      },
+                      onSwipeCancelled: () {
+                        setState(() {
+                          isSwipingRight = false;
+                          isSwipingLeft = false;
+                        });
+                      },
+                      padding: const EdgeInsets.only(
+                        left: 25,
+                        right: 25,
+                        top: 20,
+                        bottom: 40,
+                      ),
+                      onEnd: _onEnd,
+                      cardsCount: candidates.length,
+                      cardsBuilder: (BuildContext context, int index) {
+                        return AnonymousPostCard(candidate: candidates[index]);
+                      },
+                    ),
+                    leftIcon(isSwipingLeft),
+                    rightIcon(isSwipingRight),
+                  ],
                 ),
               ),
               swipeProgressBar(),
@@ -83,6 +116,92 @@ class SwipeUIPageState extends State<SwipeUIPage> {
                 ),
               )
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  TweenAnimationBuilder<double> leftIcon(bool isSwipingLeft) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      tween: Tween<double>(
+        begin: 0,
+        end: isSwipingLeft ? 1 : 0,
+      ),
+      builder: (context, value, _) => Positioned(
+        left: 0,
+        bottom: 0,
+        top: 0,
+        child: Center(
+          child: Container(
+            height: value * 60,
+            width: value * 60,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF3868),
+              borderRadius: const BorderRadius.all(Radius.circular(50)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF3868).withOpacity(0.9 * value),
+                  spreadRadius: -10,
+                  blurRadius: 20,
+                  offset: const Offset(0, 20),
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Transform.scale(
+              scale: value,
+              child: const Icon(
+                Icons.thumb_down,
+                color: AppColors.whiteColor,
+                size: 40,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  TweenAnimationBuilder<double> rightIcon(bool isSwipingRight) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      tween: Tween<double>(
+        begin: 0,
+        end: isSwipingRight ? 1 : 0,
+      ),
+      builder: (context, value, _) => Positioned(
+        right: 0,
+        bottom: 0,
+        top: 0,
+        child: Center(
+          child: Container(
+            height: value * 60,
+            width: value * 60,
+            decoration: BoxDecoration(
+              color: CupertinoColors.activeGreen,
+              borderRadius: const BorderRadius.all(Radius.circular(50)),
+              boxShadow: [
+                BoxShadow(
+                  color: CupertinoColors.activeGreen.withOpacity(0.9 * value),
+                  spreadRadius: -10,
+                  blurRadius: 20,
+                  offset: const Offset(0, 20),
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Transform.scale(
+              scale: value,
+              child: const Icon(
+                Icons.thumb_up,
+                color: AppColors.whiteColor,
+                size: 40,
+              ),
+            ),
           ),
         ),
       ),
@@ -130,13 +249,15 @@ class SwipeUIPageState extends State<SwipeUIPage> {
   void _swipe(int index, AppinioSwiperDirection direction) {
     setState(() {
       nowIndex = index;
+      isSwipingLeft = false;
+      isSwipingRight = false;
     });
     log("the card was swiped to the: " + direction.name);
   }
 
   void _unswipe(bool unswiped) {
     setState(() {
-      nowIndex -= 1;
+      nowIndex = math.max(0, nowIndex - 1);
     });
     if (unswiped) {
       log("SUCCESS: card was unswiped");
@@ -280,7 +401,6 @@ List<CandidateModel> candidates = [
   ),
 ];
 
-
 class SwipeUIButton extends StatelessWidget {
   final Function onTap;
   final Widget child;
@@ -323,7 +443,7 @@ Widget swipeRightButton(AppinioSwiperController controller) {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.check_rounded,
+            Icons.thumb_up,
             color: CupertinoColors.white,
             size: 30,
           ),
@@ -362,7 +482,7 @@ Widget swipeLeftButton(AppinioSwiperController controller) {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.close,
+            Icons.thumb_down,
             color: CupertinoColors.white,
             size: 30,
           ),
