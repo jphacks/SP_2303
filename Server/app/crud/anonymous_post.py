@@ -66,6 +66,26 @@ def create_anonymous_post(
     return post
 
 
+def update_anonymous_post(
+    db: Session,
+    uid: str,
+    timelineId: int,
+    googleMapShopId: str,
+    star: float,
+) -> AnonymousPost:
+    post = (
+        db.query(AnonymousPost)
+        .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
+        .first()
+    )
+    post.googleMapShopId = googleMapShopId
+    post.star = star
+    post.updatedAt = datetime.now()
+    db.commit()
+    db.refresh(post)
+    return post
+
+
 async def create_anonymous_post_image(
     db: Session,
     anonymousPostId: int,
@@ -110,6 +130,7 @@ def fetch_anonymous_post_by_uid_timelineId(
         .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
         .first()
     )
+    print("post", post)
     return post
 
 
@@ -134,5 +155,28 @@ def delete_anonymous_post_by_uid_timelineId(
 
     db.query(AnonymousPost).filter(
         AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId
+    ).delete()
+    db.commit()
+
+
+def delete_anonymous_post_image_by_uid_timelineId(
+    db: Session, uid: str, timelineId: int
+) -> None:
+    # 該当の投稿を取得
+    post = (
+        db.query(AnonymousPost)
+        .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
+        .first()
+    )
+
+    imageList = post.anonymousPostImages
+    for image in imageList:
+        # ファイルを削除
+        file_path = os.path.join(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH, image.fileName)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    # imageの削除
+    db.query(AnonymousPostImage).filter(
+        AnonymousPostImage.anonymousPostId == post.id
     ).delete()
     db.commit()
