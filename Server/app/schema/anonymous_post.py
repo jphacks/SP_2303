@@ -7,14 +7,6 @@ from pydantic import BaseModel, Field
 from app.models.anonymous_post import AnonymousPost as PostModel
 from app.schema.anonymous_post_image import AnonymousPostImage as ImageSchema
 
-# class AnonymousPostCreate(BaseModel):
-#     timelineId: int = Form()
-# googleMapShopId: str
-# longitude: float
-# latitude: float
-# star: float
-# imageList: list[UploadFile]
-
 
 class AnonymousPostDelete(BaseModel):
     timelineId: int = Field(description="端末で保存されているタイムラインのID")

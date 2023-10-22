@@ -40,6 +40,7 @@ async def create_anonymous_post(
     db: Session = Depends(get_db),
     cred: UserInfo = Depends(get_current_user),
 ) -> None:
+    logger.debug("request: POST /api/anonymous-post")
     uid = cred["uid"]
     # GoogleMapShopの追加・更新
     shop = anonymous_post.update_google_map_shop_by_shopId(
@@ -55,7 +56,6 @@ async def create_anonymous_post(
     )
     # 匿名投稿の画像の追加
     await anonymous_post.create_anonymous_post_image(db, post.id, imageList)
-    logger.debug("request: POST /api/anonymous-post")
 
 
 @router.delete("/api/anonymous-post", status_code=status.HTTP_204_NO_CONTENT)
