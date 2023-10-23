@@ -36,7 +36,7 @@ async def create_anonymous_post(
     longitude: float = Form(),
     latitude: float = Form(),
     star: float = Form(),
-    imageList: list[UploadFile] = Form(min_length=0),
+    imageList: list[UploadFile] = Form(min_length=1),
     db: Session = Depends(get_db),
     cred: UserInfo = Depends(get_current_user),
 ) -> None:

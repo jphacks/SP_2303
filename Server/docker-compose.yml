@@ -17,7 +17,7 @@ services:
     image: postgres:16
     restart: always
     ports:
-      - 5432:5432
+      - 5433:5432 # localでpostgresが動いてる際に競合するので、ホスト側は5433とする
     volumes:
       - db_store:/var/lib/postgresql/data
     environment:
