@@ -2,8 +2,9 @@ import os
 import uuid
 from datetime import datetime
 
-from fastapi import UploadFile
+from fastapi import UploadFile, status
 from sqlalchemy.orm import Session
+from starlette.exceptions import HTTPException
 
 from app.models.anonymous_post import AnonymousPost
 from app.models.anonymous_post_image import AnonymousPostImage
@@ -78,6 +79,10 @@ def update_anonymous_post(
         .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
         .first()
     )
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
+        )
     post.googleMapShopId = googleMapShopId
     post.star = star
     post.updatedAt = datetime.now()
@@ -93,7 +98,10 @@ async def create_anonymous_post_image(
 ) -> None:
     for image in imageList:
         content = await image.read()
-        filename = f"{uuid.uuid4()}{os.path.splitext(image.filename)[1]}"
+        if image.filename is None:
+            continue
+        requestFileName = os.path.splitext(image.filename)[1]
+        filename = f"{uuid.uuid4()}{requestFileName}"
         save_path = os.path.join(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH, filename)
         # ディレクトリが存在しない場合、作成する
         if not os.path.exists(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH):
@@ -142,13 +150,19 @@ def delete_anonymous_post_by_uid_timelineId(
         .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
         .first()
     )
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
+        )
+
     imageList = post.anonymousPostImages
 
     # ディレクトリが存在しない場合、作成する
     if not os.path.exists(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH):
         os.makedirs(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH)
+
+    # ファイルを削除
     for image in imageList:
-        # ファイルを削除
         file_path = os.path.join(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH, image.fileName)
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -168,10 +182,19 @@ def delete_anonymous_post_image_by_uid_timelineId(
         .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
         .first()
     )
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
+        )
 
     imageList = post.anonymousPostImages
+
+    # ディレクトリが存在しない場合、作成する
+    if not os.path.exists(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH):
+        os.makedirs(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH)
+
+    # ファイルを削除
     for image in imageList:
-        # ファイルを削除
         file_path = os.path.join(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH, image.fileName)
         if os.path.exists(file_path):
             os.remove(file_path)
