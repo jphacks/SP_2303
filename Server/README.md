@@ -10,7 +10,7 @@ Poetry
 - .env.sample を.env にコピーする
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 ### 開発環境の起動方法 （devcontainer)
@@ -34,4 +34,17 @@ docker compose run --rm app poetry run alembic upgrade head
 docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 docker compose -f docker-compose.prod.yml run --rm app poetry run alembic upgrade head
+```
+
+### format が効かない時
+
+docker に入る必要があります。
+
+```bash
+docker compose -f docker-compose.local.yml exec app bash
+```
+
+```bash
+poetry shell
+poe format
 ```
