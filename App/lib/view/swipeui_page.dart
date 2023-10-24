@@ -28,7 +28,10 @@ class SwipeUIPageState extends State<SwipeUIPage> {
   void initState() {
     candidates = [
       CandidateModel(
-        googlePlaceId: "xxxxxxxx1",
+        name: "麺屋 てすと",
+        address: "サンプル県サンプルサンプル",
+        latitude: 35.681236,
+        longitude: 139.767125,
         img: Image.network(
           "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
           fit: BoxFit.cover,
@@ -36,7 +39,10 @@ class SwipeUIPageState extends State<SwipeUIPage> {
         star: 5,
       ),
       CandidateModel(
-        googlePlaceId: "xxxxxxxx2",
+        name: "麺屋 てすと2",
+        address: "サンプルサンプルサンプル県サンプルサンプル",
+        latitude: 35.684236,
+        longitude: 139.762125,
         img: Image.network(
           "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
           fit: BoxFit.cover,
@@ -44,25 +50,12 @@ class SwipeUIPageState extends State<SwipeUIPage> {
         star: 4,
       ),
       CandidateModel(
-        googlePlaceId: "xxxxxxxx3",
+        name: "麺屋 てすと3てすと3てすと3てすと3てすと3てすと3",
+        address: "サンプル県サンプルサンプル",
+        latitude: 35.680236,
+        longitude: 139.769125,
         img: Image.network(
           "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
-          fit: BoxFit.cover,
-        ),
-        star: 4.5,
-      ),
-      CandidateModel(
-        googlePlaceId: "xxxxxxxx4",
-        img: Image.network(
-          "https://www.kajiken.biz/wp/wp-content/uploads/2017/06/sakae_shio-480x480.jpg",
-          fit: BoxFit.cover,
-        ),
-        star: 4,
-      ),
-      CandidateModel(
-        googlePlaceId: "xxxxxxxx5",
-        img: Image.network(
-          "https://blogimg.goo.ne.jp/image/upload/f_auto,q_auto,t_image_sp_entry/v1/user_image/23/5f/a06d2be63d977115f3a78ce1e5ea2f92.jpg",
           fit: BoxFit.cover,
         ),
         star: 4.5,
@@ -309,9 +302,6 @@ class SwipeUIPageState extends State<SwipeUIPage> {
 
   void _onEnd() {
     log("end reached!");
-    for (var candidate in goodCandidates) {
-      log(candidate.googlePlaceId!);
-    }
     if (goodCandidates.isEmpty) {
       Navigator.pop(context);
     } else {
@@ -438,14 +428,24 @@ class AnonymousPostCard extends StatelessWidget {
 }
 
 class CandidateModel {
-  String? googlePlaceId;
-  Image? img;
-  double? star;
+  int? id;
+  bool? isPicked;
+  String name;
+  String address;
+  double latitude;
+  double longitude;
+  Image img;
+  double star;
 
   CandidateModel({
-    this.googlePlaceId,
-    this.img,
-    this.star,
+    this.id,
+    this.isPicked,
+    required this.name,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
+    required this.img,
+    required this.star,
   });
 }
 
@@ -545,5 +545,3 @@ Widget swipeLeftButton(AppinioSwiperController controller) {
     ),
   );
 }
-
-

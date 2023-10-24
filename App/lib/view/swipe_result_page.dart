@@ -17,21 +17,12 @@ class SwipeResultPage extends StatefulWidget {
 }
 
 class _SwipeResultPageState extends State<SwipeResultPage> {
-  List<SwipeResult> swipeRes = [];
+  List<CandidateModel> get candidates => widget.candidates;
   @override
   void initState() {
-    for (var i = 0; i < widget.candidates.length; i++) {
-      swipeRes.add(
-        SwipeResult(
-          id: i + 1,
-          shopName: "ここに店名ここに店名ここに店名ここに店名ここに店名",
-          shopAddress: "ここに住所ここに住所ここに住所ここに住所ここに住所ここに住所",
-          shopImg: widget.candidates[i].img!,
-          shopRating: widget.candidates[i].star!,
-          shopLatLng: LatLng(35.681 + 0.01 * Random().nextInt(10),
-              139.767 + 0.01 * Random().nextInt(10)),
-        ),
-      );
+    for (var i = 0; i < candidates.length; i++) {
+      candidates[i].id = i + 1;
+      candidates[i].isPicked = false;
     }
 
     super.initState();
@@ -45,14 +36,14 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SwipeResMap(
-              swipeRes: swipeRes,
-              minLat: swipeRes.map((e) => e.shopLatLng.latitude).reduce(
+              candidates: candidates,
+              minLat: candidates.map((e) => e.latitude).reduce(
                   (value, element) => value < element ? value : element),
-              maxLat: swipeRes.map((e) => e.shopLatLng.latitude).reduce(
+              maxLat: candidates.map((e) => e.latitude).reduce(
                   (value, element) => value > element ? value : element),
-              minLng: swipeRes.map((e) => e.shopLatLng.longitude).reduce(
+              minLng: candidates.map((e) => e.longitude).reduce(
                   (value, element) => value < element ? value : element),
-              maxLng: swipeRes.map((e) => e.shopLatLng.longitude).reduce(
+              maxLng: candidates.map((e) => e.longitude).reduce(
                   (value, element) => value > element ? value : element),
             ),
             const Padding(
@@ -69,7 +60,7 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
               child: Stack(
                 children: [
                   GridView.builder(
-                    itemCount: swipeRes.length,
+                    itemCount: candidates.length,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -80,13 +71,13 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       return _SwipeResCard(
-                        swipeRes: swipeRes,
+                        candidates: candidates,
                         index: index,
                         onTap: () {
                           setState(() {
-                            swipeRes[index].isPicked
-                                ? swipeRes[index].isPicked = false
-                                : swipeRes[index].isPicked = true;
+                            candidates[index].isPicked!
+                                ? candidates[index].isPicked = false
+                                : candidates[index].isPicked = true;
                           });
                         },
                       );
@@ -95,8 +86,9 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                   //オレンジ色の登録ボタン
                   //TweenAnimationBuilder
                   _RegisterButton(
-                    isShow: (swipeRes.any((element) => element.isPicked)),
-                    cnt: swipeRes.where((element) => element.isPicked).length,
+                    isShow: (candidates.any((element) => element.isPicked!)),
+                    cnt:
+                        candidates.where((element) => element.isPicked!).length,
                     onPressed: () {
                       //Cupertinoダイアログ
                       showCupertinoDialog(
@@ -195,12 +187,12 @@ class _RegisterButton extends StatelessWidget {
 
 class _SwipeResCard extends StatelessWidget {
   const _SwipeResCard({
-    required this.swipeRes,
+    required this.candidates,
     required this.index,
     required this.onTap,
   });
 
-  final List<SwipeResult> swipeRes;
+  final List<CandidateModel> candidates;
   final int index;
   final Function() onTap;
 
@@ -212,7 +204,7 @@ class _SwipeResCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: swipeRes[index].isPicked
+            color: candidates[index].isPicked!
                 ? AppColors.primaryColor
                 : Colors.transparent,
             width: 2,
@@ -237,13 +229,13 @@ class _SwipeResCard extends StatelessWidget {
               child: Stack(
                 children: [
                   AspectRatio(
-                      aspectRatio: 16 / 9, child: swipeRes[index].shopImg),
+                      aspectRatio: 16 / 9, child: candidates[index].img),
                   Positioned(
                       top: 4,
                       left: 4,
                       child: _NumBudge(
                         size: 20,
-                        num: swipeRes[index].id,
+                        num: candidates[index].id!,
                       )),
                   //星
                   Positioned(
@@ -310,13 +302,13 @@ class _SwipeResCard extends StatelessWidget {
 class SwipeResMap extends StatelessWidget {
   const SwipeResMap({
     super.key,
-    required this.swipeRes,
+    required this.candidates,
     this.minLat,
     this.maxLat,
     this.minLng,
     this.maxLng,
   });
-  final List<SwipeResult> swipeRes;
+  final List<CandidateModel> candidates;
   final double? minLat;
   final double? maxLat;
   final double? minLng;
@@ -324,7 +316,7 @@ class SwipeResMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final len = swipeRes.length;
+    final len = candidates.length;
     //zoomの計算
     //たて200px
     //よこ300px
@@ -381,7 +373,7 @@ class SwipeResMap extends StatelessWidget {
                   "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png",
             ),
             MarkerLayer(
-              markers: swipeRes
+              markers: candidates
                   .map(
                     (e) => buildMarker(e),
                   )
@@ -394,13 +386,13 @@ class SwipeResMap extends StatelessWidget {
     );
   }
 
-  Marker buildMarker(SwipeResult e) {
+  Marker buildMarker(CandidateModel e) {
     return Marker(
       width: 30,
       height: 30,
-      point: e.shopLatLng,
+      point: LatLng(e.latitude!, e.longitude!),
       builder: (context) => _NumBudge(
-        num: e.id,
+        num: e.id!,
       ),
     );
   }
@@ -445,21 +437,3 @@ class _NumBudge extends StatelessWidget {
   }
 }
 
-class SwipeResult {
-  final int id;
-  final String shopName;
-  final String shopAddress;
-  final Image shopImg;
-  final double shopRating;
-  final LatLng shopLatLng;
-  bool isPicked = false;
-
-  SwipeResult({
-    required this.id,
-    required this.shopName,
-    required this.shopAddress,
-    required this.shopImg,
-    required this.shopRating,
-    required this.shopLatLng,
-  });
-}
