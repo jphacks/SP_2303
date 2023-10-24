@@ -36,6 +36,8 @@ async def create_anonymous_post(
     longitude: float = Form(),
     latitude: float = Form(),
     star: float = Form(),
+    name: str = Form(),
+    address: str = Form(),
     imageList: list[UploadFile] = Form(min_length=1),
     db: Session = Depends(get_db),
     cred: UserInfo = Depends(get_current_user),
@@ -45,7 +47,7 @@ async def create_anonymous_post(
 
     # GoogleMapShopの追加・更新
     shop = anonymous_post.update_google_map_shop_by_shopId(
-        db, googleMapShopId, longitude, latitude
+        db, googleMapShopId, longitude, latitude, name, address
     )
     # uidとtimelineIdから匿名投稿を取得
     posted_content = anonymous_post.fetch_anonymous_post_by_uid_timelineId(
