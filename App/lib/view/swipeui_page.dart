@@ -156,10 +156,12 @@ class SwipeUIPageState extends State<SwipeUIPage> {
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
                 child: Wrap(
                   spacing: 16,
+                  runSpacing: 16,
                   alignment: WrapAlignment.center,
                   children: [
                     swipeLeftButton(controller),
                     swipeRightButton(controller),
+                    swipeEndButton(),
                   ],
                 ),
               )
@@ -319,6 +321,44 @@ class SwipeUIPageState extends State<SwipeUIPage> {
         );
       }));
     }
+  }
+
+  Widget swipeEndButton() {
+    return SwipeUIButton(
+      onTap: () => _onEnd(),
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor,
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryColor.withOpacity(0.9),
+              spreadRadius: -10,
+              blurRadius: 20,
+              offset: const Offset(0, 20), // changes position of shadow
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check,
+              color: CupertinoColors.white,
+              size: 30,
+            ),
+            Text("終わる！",
+                style: TextStyle(
+                  color: CupertinoColors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                )),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -506,19 +546,4 @@ Widget swipeLeftButton(AppinioSwiperController controller) {
   );
 }
 
-//unswipe card
-Widget unswipeButton(AppinioSwiperController controller) {
-  return SwipeUIButton(
-    onTap: () => controller.unswipe(),
-    child: Container(
-      height: 60,
-      width: 60,
-      alignment: Alignment.center,
-      child: const Icon(
-        Icons.rotate_left_rounded,
-        color: CupertinoColors.systemGrey2,
-        size: 40,
-      ),
-    ),
-  );
-}
+
