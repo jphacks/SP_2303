@@ -446,6 +446,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
   @override
   void dispose() {
     plMarkerController.dispose();
+    positionStream.cancel();
     super.dispose();
   }
 }

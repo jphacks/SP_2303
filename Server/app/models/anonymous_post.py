@@ -3,7 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, Relationship, relationship
 
 from app.db.base_class import Base
@@ -19,7 +27,10 @@ class AnonymousPost(Base):
     """
 
     __tablename__ = "anonymous_post"
-    __table_args__ = {"comment": "Swipe UIに使用する匿名投稿用のテーブル"}
+    __table_args__ = (
+        UniqueConstraint("user_id", "timeline_id", name="unique_idx_uid_tmiline_id"),
+        {"comment": "Swipe UIに使用する匿名投稿用のテーブル"},
+    )
 
     id: int = Column("id", Integer, primary_key=True, autoincrement=True)
     userId: str = Column("user_id", String(200), nullable=False)
