@@ -310,11 +310,15 @@ class SwipeUIPageState extends State<SwipeUIPage> {
     for (var candidate in goodCandidates) {
       log(candidate.googlePlaceId!);
     }
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return SwipeResultPage(
-        candidates: goodCandidates,
-      );
-    }));
+    if (goodCandidates.isEmpty) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return SwipeResultPage(
+          candidates: goodCandidates,
+        );
+      }));
+    }
   }
 }
 

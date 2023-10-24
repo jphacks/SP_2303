@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -16,8 +18,8 @@ class SwipeResultPage extends StatefulWidget {
 
 class _SwipeResultPageState extends State<SwipeResultPage> {
   List<SwipeResult> swipeRes = [];
+  @override
   void initState() {
-    // TODO: implement initState
     for (var i = 0; i < widget.candidates.length; i++) {
       swipeRes.add(
         SwipeResult(
@@ -26,10 +28,12 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
           shopAddress: "ここに住所ここに住所ここに住所ここに住所ここに住所ここに住所",
           shopImg: widget.candidates[i].img!,
           shopRating: widget.candidates[i].star!,
-          shopLatLng: LatLng(35.681 + 0.01 * i, 139.767 + 0.01 * i),
+          shopLatLng: LatLng(35.681 + 0.01 * Random().nextInt(10),
+              139.767 + 0.01 * Random().nextInt(10)),
         ),
       );
     }
+
     super.initState();
   }
 
@@ -42,6 +46,14 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
           children: [
             SwipeResMap(
               swipeRes: swipeRes,
+              minLat: swipeRes.map((e) => e.shopLatLng.latitude).reduce(
+                  (value, element) => value < element ? value : element),
+              maxLat: swipeRes.map((e) => e.shopLatLng.latitude).reduce(
+                  (value, element) => value > element ? value : element),
+              minLng: swipeRes.map((e) => e.shopLatLng.longitude).reduce(
+                  (value, element) => value < element ? value : element),
+              maxLng: swipeRes.map((e) => e.shopLatLng.longitude).reduce(
+                  (value, element) => value > element ? value : element),
             ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -57,7 +69,7 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
               child: Stack(
                 children: [
                   GridView.builder(
-                    itemCount: widget.candidates.length,
+                    itemCount: swipeRes.length,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -230,7 +242,7 @@ class _SwipeResCard extends StatelessWidget {
                       top: 4,
                       left: 4,
                       child: _NumBudge(
-                        size: 24,
+                        size: 20,
                         num: swipeRes[index].id,
                       )),
                   //星
@@ -299,10 +311,42 @@ class SwipeResMap extends StatelessWidget {
   const SwipeResMap({
     super.key,
     required this.swipeRes,
+    this.minLat,
+    this.maxLat,
+    this.minLng,
+    this.maxLng,
   });
   final List<SwipeResult> swipeRes;
+  final double? minLat;
+  final double? maxLat;
+  final double? minLng;
+  final double? maxLng;
+
   @override
   Widget build(BuildContext context) {
+    final len = swipeRes.length;
+    //zoomの計算
+    //たて200px
+    //よこ300px
+    double? zoom = 14;
+    if (len >= 2 &&
+        minLat != null &&
+        maxLat != null &&
+        minLng != null &&
+        maxLng != null) {
+      final latDiff = maxLat! - minLat!;
+      final lngDiff = maxLng! - minLng!;
+      //var pixelPerLat = pow(2, zoom + 8) / 360;
+      var pixelPerLat = 120 / latDiff;
+      var pixelPerLng = 240 / lngDiff / cos(maxLat! * pi / 180);
+      zoom = log(360 * min(pixelPerLat, pixelPerLng)) / log(2) - 8;
+      //zoom = 16 - (diff * 100);
+    }
+    //centerの計算
+    final LatLng? centerLat = (minLat != null && maxLat != null)
+        ? LatLng((minLat! + maxLat!) / 2, (minLng! + maxLng!) / 2)
+        : null;
+
     return Container(
       height: 200,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -324,13 +368,13 @@ class SwipeResMap extends StatelessWidget {
         child: FlutterMap(
           // マップ表示設定
           options: MapOptions(
-            center: LatLng(35.681, 139.767),
-            zoom: 14.0,
+            center: centerLat ?? LatLng(35.681, 139.767),
+            zoom: zoom ?? 16,
             interactiveFlags: InteractiveFlag.all,
             enableScrollWheel: true,
             scrollWheelVelocity: 0.00001,
           ),
-          
+
           children: [
             TileLayer(
               urlTemplate:
@@ -352,8 +396,8 @@ class SwipeResMap extends StatelessWidget {
 
   Marker buildMarker(SwipeResult e) {
     return Marker(
-      width: 40,
-      height: 40,
+      width: 30,
+      height: 30,
       point: e.shopLatLng,
       builder: (context) => _NumBudge(
         num: e.id,
@@ -365,7 +409,7 @@ class SwipeResMap extends StatelessWidget {
 class _NumBudge extends StatelessWidget {
   const _NumBudge({
     required this.num,
-    this.size = 30,
+    this.size = 20,
   });
   final int num;
   final double size;
@@ -376,7 +420,7 @@ class _NumBudge extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: AppColors.primaryColor,
-          width: 3,
+          width: 2,
         ),
       ),
       child: ClipRRect(
@@ -391,7 +435,7 @@ class _NumBudge extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryColor,
-                fontSize: 18,
+                fontSize: 14,
               ),
             ),
           ),
