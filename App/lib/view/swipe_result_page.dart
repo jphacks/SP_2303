@@ -21,6 +21,7 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
     for (var i = 0; i < widget.candidates.length; i++) {
       swipeRes.add(
         SwipeResult(
+          id: i + 1,
           shopName: "ここに店名ここに店名ここに店名ここに店名ここに店名",
           shopAddress: "ここに住所ここに住所ここに住所ここに住所ここに住所ここに住所",
           shopImg: widget.candidates[i].img!,
@@ -39,7 +40,9 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SwipeResMap(),
+            SwipeResMap(
+              swipeRes: swipeRes,
+            ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Text(
@@ -64,7 +67,9 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                       childAspectRatio: 1,
                     ),
                     itemBuilder: (BuildContext context, int index) {
-                      return InkWell(
+                      return _SwipeResCard(
+                        swipeRes: swipeRes,
+                        index: index,
                         onTap: () {
                           setState(() {
                             swipeRes[index].isPicked
@@ -72,132 +77,215 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                                 : swipeRes[index].isPicked = true;
                           });
                         },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: swipeRes[index].isPicked
-                                  ? AppColors.primaryColor
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                            color: CupertinoColors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    CupertinoColors.systemGrey.withOpacity(0.2),
-                                spreadRadius: 3,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              )
-                            ],
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(10),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: widget.candidates[index].img!),
-                                    Positioned(
-                                      bottom: 4,
-                                      right: 4,
-                                      child: Row(
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              IgnorePointer(
-                                                ignoring: true,
-                                                child: AppRatingBar(
-                                                  initialRating: 4,
-                                                  onRatingUpdate: (rating) {},
-                                                  itemSize: 20,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(4, 4, 4, 0),
-                                child: Text(
-                                  "ここに店名ここに店名ここに店名ここに店名ここに店名",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(4, 2, 4, 0),
-                                child: Text(
-                                  "ここに住所ここに住所ここに住所ここに住所ここに住所ここに住所",
-                                  style: TextStyle(fontSize: 12),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                                width: double.infinity,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(10),
-                                    bottomRight: Radius.circular(10),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       );
                     },
                   ),
                   //オレンジ色の登録ボタン
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    right: 16,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            backgroundColor: AppColors.primaryColor),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SwipeUIPage()),
+                  //TweenAnimationBuilder
+                  _RegisterButton(
+                    isShow: (swipeRes.any((element) => element.isPicked)),
+                    cnt: swipeRes.where((element) => element.isPicked).length,
+                    onPressed: () {
+                      //Cupertinoダイアログ
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CupertinoAlertDialog(
+                            title: const Text("行ってみたいお店として\n登録しました"),
+                            content: const Text("登録したお店はマップから確認することができます。"),
+                            actions: [
+                              CupertinoDialogAction(
+                                child: const Text("OK"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
                           );
                         },
-                        child: const Text(
-                          "登録する",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
+                      ).then((value) => Navigator.popUntil(
+                          context, (route) => route.isFirst));
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RegisterButton extends StatelessWidget {
+  const _RegisterButton({
+    required this.isShow,
+    required this.onPressed,
+    required this.cnt,
+  });
+  final int cnt;
+  final bool isShow;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder(
+      curve: Curves.easeInOutCubic,
+      tween: Tween<double>(begin: 0, end: isShow ? 1 : 0),
+      duration: const Duration(milliseconds: 200),
+      builder: (BuildContext context, double value, Widget? child) {
+        return Positioned(
+          bottom: -50 + 75 * value,
+          left: 16,
+          right: 16,
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: AppColors.primaryColor,
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                padding: EdgeInsets.zero,
+              ),
+              onPressed: (isShow) ? onPressed : null,
+              child: Stack(
+                children: [
+                  Text(
+                    "$cnt件のお店を登録する",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  Opacity(
+                    opacity: 1 - value,
+                    child: const Text(
+                      "登録する",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SwipeResCard extends StatelessWidget {
+  const _SwipeResCard({
+    required this.swipeRes,
+    required this.index,
+    required this.onTap,
+  });
+
+  final List<SwipeResult> swipeRes;
+  final int index;
+  final Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: swipeRes[index].isPicked
+                ? AppColors.primaryColor
+                : Colors.transparent,
+            width: 2,
+          ),
+          color: CupertinoColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: CupertinoColors.systemGrey.withOpacity(0.2),
+              spreadRadius: 3,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            )
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(10),
+              ),
+              child: Stack(
+                children: [
+                  AspectRatio(
+                      aspectRatio: 16 / 9, child: swipeRes[index].shopImg),
+                  Positioned(
+                      top: 4,
+                      left: 4,
+                      child: _NumBudge(
+                        size: 24,
+                        num: swipeRes[index].id,
+                      )),
+                  //星
+                  Positioned(
+                    bottom: 4,
+                    right: 4,
+                    child: Row(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IgnorePointer(
+                              ignoring: true,
+                              child: AppRatingBar(
+                                initialRating: 4,
+                                onRatingUpdate: (rating) {},
+                                itemSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(4, 4, 4, 0),
+              child: Text(
+                "ここに店名ここに店名ここに店名ここに店名ここに店名",
+                style: TextStyle(fontWeight: FontWeight.bold),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(4, 2, 4, 0),
+              child: Text(
+                "ここに住所ここに住所ここに住所ここに住所ここに住所ここに住所",
+                style: TextStyle(fontSize: 12),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
               ),
             ),
           ],
@@ -210,8 +298,9 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
 class SwipeResMap extends StatelessWidget {
   const SwipeResMap({
     super.key,
+    required this.swipeRes,
   });
-
+  final List<SwipeResult> swipeRes;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -241,12 +330,71 @@ class SwipeResMap extends StatelessWidget {
             enableScrollWheel: true,
             scrollWheelVelocity: 0.00001,
           ),
+          
           children: [
             TileLayer(
               urlTemplate:
                   "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png",
-            )
+            ),
+            MarkerLayer(
+              markers: swipeRes
+                  .map(
+                    (e) => buildMarker(e),
+                  )
+                  .toList(),
+              rotate: true,
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Marker buildMarker(SwipeResult e) {
+    return Marker(
+      width: 40,
+      height: 40,
+      point: e.shopLatLng,
+      builder: (context) => _NumBudge(
+        num: e.id,
+      ),
+    );
+  }
+}
+
+class _NumBudge extends StatelessWidget {
+  const _NumBudge({
+    required this.num,
+    this.size = 30,
+  });
+  final int num;
+  final double size;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: AppColors.primaryColor,
+          width: 3,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: Container(
+          color: Colors.white,
+          width: size,
+          height: size,
+          child: Center(
+            child: Text(
+              num.toString(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryColor,
+                fontSize: 18,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -254,6 +402,7 @@ class SwipeResMap extends StatelessWidget {
 }
 
 class SwipeResult {
+  final int id;
   final String shopName;
   final String shopAddress;
   final Image shopImg;
@@ -262,6 +411,7 @@ class SwipeResult {
   bool isPicked = false;
 
   SwipeResult({
+    required this.id,
     required this.shopName,
     required this.shopAddress,
     required this.shopImg,
