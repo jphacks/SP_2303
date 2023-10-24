@@ -21,7 +21,12 @@ def fetch_anonymous_post_by_uid(db: Session, uid: str) -> list[AnonymousPost]:
 
 
 def update_google_map_shop_by_shopId(
-    db: Session, googleMapShopId: str, longitude: float, latitude: float
+    db: Session,
+    googleMapShopId: str,
+    longitude: float,
+    latitude: float,
+    name: str,
+    address: str,
 ) -> GoogleMapShop | None:
     shop = (
         db.query(GoogleMapShop)
@@ -33,6 +38,8 @@ def update_google_map_shop_by_shopId(
             googleMapShopId=googleMapShopId,
             longitude=longitude,
             latitude=latitude,
+            name=name,
+            address=address,
             createdAt=datetime.now(),
             updatedAt=datetime.now(),
         )
@@ -40,6 +47,8 @@ def update_google_map_shop_by_shopId(
     else:
         shop.longitude = longitude
         shop.latitude = latitude
+        shop.name = name
+        shop.address = address
         shop.updatedAt = datetime.now()
     db.commit()
     db.refresh(shop)
