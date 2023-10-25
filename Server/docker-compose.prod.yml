@@ -12,6 +12,7 @@ services:
     environment:
       DOMAINS: ${DOMAINS}
       STAGE: ${STAGE}
+      CLIENT_MAX_BODY_SIZE: 50M
     volumes:
       - https-portal-data:/var/lib/https-portal
   app:
