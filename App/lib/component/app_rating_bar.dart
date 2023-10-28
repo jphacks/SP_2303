@@ -1,5 +1,6 @@
 import 'package:flutter/Material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 //レーティングのバー
 class AppRatingBar extends StatelessWidget {
@@ -28,38 +29,35 @@ class AppRatingBar extends StatelessWidget {
         glowColor: Colors.white,
         onRatingUpdate: onRatingUpdate,
         ratingWidget: RatingWidget(
-          full: const Icon(Icons.star, color: Colors.amber),
-          half: const _HalfStarIcon(),
-          empty: const Icon(Icons.star, color: Color(0xffd3d3d3)),
+          full: Container(
+            width: 300,
+            height: 300,
+            margin: const EdgeInsets.only(top: 20, bottom: 12),
+            child: SvgPicture.asset(
+              'images/stars/all.svg',
+              fit: BoxFit.contain,
+            ),
+          ),
+          half: Container(
+            width: 300,
+            height: 300,
+            margin: const EdgeInsets.only(top: 20, bottom: 12),
+            child: SvgPicture.asset(
+              'images/stars/half.svg',
+              fit: BoxFit.contain,
+            ),
+          ),
+          empty: Container(
+            width: 300,
+            height: 300,
+            margin: const EdgeInsets.only(top: 20, bottom: 12),
+            child: SvgPicture.asset(
+              'images/stars/none.svg',
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
       ),
     );
   }
-}
-
-class _HalfStarIcon extends StatelessWidget {
-  const _HalfStarIcon({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Icon(Icons.star, color: Color(0xffd3d3d3)),
-        ClipRect(
-          clipper: _HalfClipper(),
-          child: const Icon(Icons.star, color: Colors.amber),
-        ),
-      ],
-    );
-  }
-}
-
-class _HalfClipper extends CustomClipper<Rect> {
-  @override
-  Rect getClip(Size size) {
-    return Rect.fromLTRB(0, 0, size.width / 2, size.height);
-  }
-
-  @override
-  bool shouldReclip(_HalfClipper oldClipper) => false;
 }
