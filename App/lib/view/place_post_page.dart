@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/Cupertino.dart';
 import 'package:flutter/Material.dart';
 import 'package:flutter_haptic/haptic.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/collections/timeline.dart';
 import 'package:gohan_map/component/post_food_widget.dart';
+import 'package:gohan_map/utils/apis.dart';
+import 'package:gohan_map/utils/auth_state.dart';
 import 'package:gohan_map/utils/common.dart';
 import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/view/place_detail_page.dart';
@@ -15,7 +18,7 @@ import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_modal.dart';
 
 // 飲食店でのごはん投稿・編集画面
-class PlacePostPage extends StatefulWidget {
+class PlacePostPage extends ConsumerStatefulWidget {
   final Shop shop;
   final Timeline? timeline; // 編集ページの際に外部から初期データを渡す
 
@@ -23,17 +26,17 @@ class PlacePostPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<PlacePostPage> createState() => _PlacePostPageState();
+  ConsumerState<PlacePostPage> createState() => _PlacePostPageState();
 }
 
-class _PlacePostPageState extends State<PlacePostPage> {
+class _PlacePostPageState extends ConsumerState<PlacePostPage> {
   List<File> images = [];
   DateTime date = DateTime.now();
   String comment = '';
   double star = 4.0;
   bool isPublic = false;
   bool avoidkeyBoard = false;
-  bool isLoading = true;
+  bool isAPIRequesting = false;
 
   @override
   void initState() {
@@ -54,19 +57,11 @@ class _PlacePostPageState extends State<PlacePostPage> {
         star = widget.timeline!.star;
         isPublic = widget.timeline!.isPublic;
       }
-      setState(() {
-        // reload
-        isLoading = false;
-      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const CircularProgressIndicator();
-    }
-
     return AppModal(
       initialChildSize: 0.9,
       avoidKeyboardFlg: avoidkeyBoard,
@@ -194,6 +189,7 @@ class _PlacePostPageState extends State<PlacePostPage> {
 
   //決定ボタンを押した時の処理
   void onTapComfirm(BuildContext context) {
+    isAPIRequesting = true;
     //バリデーション
     if (images.isEmpty && comment.isEmpty) {
       showCupertinoDialog(
@@ -215,12 +211,26 @@ class _PlacePostPageState extends State<PlacePostPage> {
       return;
     }
 
-    if (isPublic) {
-      //TODO:画像投稿APIを叩く
-    } else if (widget.timeline != null) {
-      //TODO:画像削除APIを叩く
-    }
     Future(() async {
+      if (isPublic) {
+        //画像投稿APIを叩く
+        PostAPIRequest req = PostAPIRequest(
+          timelineId: widget.timeline?.id ?? 0,
+          googleMapShopId: widget.shop.googlePlaceId,
+          longitude: widget.shop.shopLongitude,
+          latitude: widget.shop.shopLatitude,
+          star: star,
+          name: widget.shop.shopName,
+          address: widget.shop.shopAddress,
+          imageList: images.map((e) => e.readAsBytesSync()).toList(),
+        );
+        final String result = await APIService.requestPostAPI(
+            req, await ref.watch(userProvider)?.getIdToken());
+        print("result: $result");
+      } else if (widget.timeline != null) {
+        //TODO:画像削除APIを叩く
+      }
+      isAPIRequesting = false;
       //wantToGoフラグがTrueの場合はFalseに変更
       if (widget.shop.wantToGoFlg) {
         final shop = Shop()
