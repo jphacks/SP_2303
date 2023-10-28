@@ -81,11 +81,9 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Material(
-          child: AppMap(
-            pins: pins,
-            mapController: mapController,
-          ),
+        AppMap(
+          pins: pins,
+          mapController: mapController,
         ),
         buildDummySearchWidget(),
       ],
