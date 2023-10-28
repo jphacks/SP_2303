@@ -87,7 +87,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        "アプリ名は、ほげほげほげほげほげほげほげほげほげほげほげほげアプリです。",
+                        "自分だけのご飯マップを作成しよう！",
                       ),
                       const Divider(
                         color: AppColors.greyColor,
@@ -95,7 +95,7 @@ class LoginPage extends StatelessWidget {
                         height: 36,
                       ),
                       const Text(
-                        "このアプリを使用するにはGoogleアカウントでログインする必要があります",
+                        "アプリを使用するにはGoogleアカウントでログインする必要があります",
                       ),
                       const SizedBox(height: 16),
                       SignInButton(
