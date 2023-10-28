@@ -8,15 +8,15 @@ class AppSearchBar extends StatelessWidget {
   final bool showBack;
   final bool autofocus;
   final TextEditingController? controller;
-  const AppSearchBar({
-    Key? key,
-    this.onSubmitted,
-    this.onChanged,
-    this.onPressClear,
-    this.showBack = true,
-    this.autofocus = false,
-    this.controller
-  }) : super(key: key);
+  const AppSearchBar(
+      {Key? key,
+      this.onSubmitted,
+      this.onChanged,
+      this.onPressClear,
+      this.showBack = true,
+      this.autofocus = false,
+      this.controller})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

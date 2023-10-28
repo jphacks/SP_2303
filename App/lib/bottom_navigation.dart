@@ -62,12 +62,13 @@ class BottomNavigation extends StatelessWidget {
     BuildContext context, {
     required TabItem tabItem,
   }) {
-    final color = currentTab == tabItem ? AppColors.tabBarColor : Colors.black26;
+    final color =
+        currentTab == tabItem ? AppColors.tabBarColor : Colors.black26;
     return BottomNavigationBarItem(
-      icon: Column( 
+      icon: Column(
         children: [
           const SizedBox(
-          height: 8,
+            height: 8,
           ),
           Icon(
             tabIcon[tabItem],

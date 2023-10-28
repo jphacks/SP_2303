@@ -75,6 +75,7 @@ dependencies:
   appinio_swiper: ^2.0.3
   firebase_auth: ^4.11.1
   sign_in_button: ^3.2.0
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -152,3 +153,8 @@ flutter_native_splash:
     image: "images/splash_android12.png"
     icon_background_color_dark: "#262626"
     image_dark: "images/splash_android12.png"
+
+flutter_icons:       
+  android: true
+  ios: true
+  image_path: "images/icon.png"
