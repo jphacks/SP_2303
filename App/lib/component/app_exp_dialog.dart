@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //経験値を増加させ、ダイアログを表示する
 Future getAndShowExpDialog({
   required BuildContext context,
+  required String title, //ダイアログのタイトル
   required int exp, //獲得させる経験値
 }) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -14,7 +15,7 @@ Future getAndShowExpDialog({
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: const Text("経験値獲得"),
+          title: Text(title),
           content: Column(
             children: [
               SizedBox(

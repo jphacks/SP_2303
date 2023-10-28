@@ -270,9 +270,19 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
     } else {
       timelineId = await _addToDB();
       //経験値獲得
-      if (context.mounted) {
-        getAndShowExpDialog(context: context, exp: 100);
+      //もしそのお店の初投稿なら100exp獲得
+      final int postCnt = await IsarUtils.getTimelinesByShopId(widget.shop.id)
+          .then((value) => value.length);
+      if (postCnt == 1) {
+        if (context.mounted) {
+          getAndShowExpDialog(context: context, title: "初投稿ボーナス", exp: 300);
+        }
+      } else {
+        if (context.mounted) {
+          getAndShowExpDialog(context: context, title: "投稿ボーナス", exp: 100);
+        }
       }
+     
     }
 
     if (isPublic && images.isNotEmpty && timelineId != -1) {
