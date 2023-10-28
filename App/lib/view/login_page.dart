@@ -5,6 +5,7 @@ import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/main.dart';
 import 'package:gohan_map/utils/auth_service.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
@@ -40,16 +41,14 @@ class LoginPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 100,
-                      width: 100,
+                      height: 250,
+                      width: 250,
                       child: Image.asset(
-                        "images/splash.png",
-                        height: 100,
-                        width: 100,
+                        "images/logo.png",
+                        height: 500,
+                        width: 500,
                       ),
                     ),
-                    const Text("ここにAppアイコン",
-                        style: TextStyle(color: AppColors.whiteColor))
                   ],
                 ),
               ),
@@ -80,7 +79,7 @@ class LoginPage extends StatelessWidget {
                       const Padding(
                         padding: EdgeInsets.only(bottom: 16.0),
                         child: Text(
-                          "アプリ名へようこそ",
+                          "Umap へようこそ",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -88,7 +87,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        "アプリ名は、ほげほげほげほげほげほげほげほげほげほげほげほげアプリです。",
+                        "自分だけのご飯マップを作成しよう！",
                       ),
                       const Divider(
                         color: AppColors.greyColor,
@@ -96,7 +95,7 @@ class LoginPage extends StatelessWidget {
                         height: 36,
                       ),
                       const Text(
-                        "このアプリを使用するにはGoogleアカウントでログインする必要があります",
+                        "アプリを使用するにはGoogleアカウントでログインする必要があります",
                       ),
                       const SizedBox(height: 16),
                       SignInButton(
