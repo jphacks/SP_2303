@@ -6,6 +6,7 @@ import 'package:flutter_haptic/haptic.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/collections/timeline.dart';
+import 'package:gohan_map/component/app_exp_dialog.dart';
 import 'package:gohan_map/component/post_food_widget.dart';
 import 'package:gohan_map/utils/apis.dart';
 import 'package:gohan_map/utils/auth_state.dart';
@@ -268,6 +269,10 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
       _updateTimeline();
     } else {
       timelineId = await _addToDB();
+      //経験値獲得
+      if (context.mounted) {
+        getAndShowExpDialog(context: context, exp: 100);
+      }
     }
 
     if (isPublic && images.isNotEmpty && timelineId != -1) {
