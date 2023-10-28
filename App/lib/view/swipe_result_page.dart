@@ -22,16 +22,42 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
   List<CandidateModel> get candidates => widget.candidates;
   @override
   void initState() {
+    
+    Map<String, int> placeIdToId = {};
     for (var i = 0; i < candidates.length; i++) {
-      candidates[i].id = i + 1;
+      debugPrint(candidates[i].googlePlaceId);
+      //idは同じplaceIdのものは同じになる
+      if (placeIdToId.containsKey(candidates[i].googlePlaceId)) {
+        candidates[i].id = placeIdToId[candidates[i].googlePlaceId];
+      } else {
+        //placeIdToIdにない場合は新しくidを割り振る
+        //idはできるだけ小さいものにする
+        int minId = 0;
+        for (var j = 0; j < candidates.length; j++) {
+          if (candidates[j].id != null) {
+            minId = max(minId, candidates[j].id!);
+          }
+        }
+        candidates[i].id = minId + 1;
+        placeIdToId[candidates[i].googlePlaceId] = minId + 1;
+      }
       candidates[i].isPicked = false;
     }
-
+    //idでソート
+    candidates.sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    Set<int> uniqueIds = <int>{};
+    int cnt = candidates.where((element) {
+      if ((element.isPicked ?? false) && uniqueIds.add(element.id ?? 0)) {
+        return true;
+      }
+      return false;
+    }).length;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -76,11 +102,16 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                         candidates: candidates,
                         index: index,
                         onTap: () {
-                          setState(() {
-                            candidates[index].isPicked!
-                                ? candidates[index].isPicked = false
-                                : candidates[index].isPicked = true;
-                          });
+                          for (var i = 0; i < candidates.length; i++) {
+                            if (candidates[i].id == candidates[index].id) {
+                              setState(() {
+                                candidates[i].isPicked!
+                                    ? candidates[i].isPicked = false
+                                    : candidates[i].isPicked = true;
+                              });
+                            }
+                          }
+                          
                         },
                       );
                     },
@@ -90,7 +121,7 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                   _RegisterButton(
                     isShow: (candidates.any((element) => element.isPicked!)),
                     cnt:
-                        candidates.where((element) => element.isPicked!).length,
+                        cnt,
                     onPressed: () {
                       //登録ボタンを押したときの処理
                       List<CandidateModel> pickedCandidates = candidates
@@ -111,7 +142,6 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                             ..updatedAt = DateTime.now(),
                         );
                       }
-                      
                       //Cupertinoダイアログ
                       showCupertinoDialog(
                         context: context,
@@ -131,7 +161,6 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                         },
                       ).then((value) => Navigator.popUntil(
                           context, (route) => route.isFirst));
-                      
                     },
                   ),
                 ],
@@ -247,7 +276,7 @@ class _SwipeResCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(10),
+                top: Radius.circular(8),
               ),
               child: Stack(
                 children: [
@@ -381,7 +410,7 @@ class SwipeResMap extends StatelessWidget {
           // マップ表示設定
           options: MapOptions(
             center: centerLat ?? LatLng(35.681, 139.767),
-            zoom: zoom ?? 16,
+            zoom: zoom,
             interactiveFlags: InteractiveFlag.all,
             enableScrollWheel: true,
             scrollWheelVelocity: 0.00001,
@@ -456,4 +485,3 @@ class _NumBudge extends StatelessWidget {
     );
   }
 }
-
