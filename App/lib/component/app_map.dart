@@ -299,7 +299,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
                   children: [
                     Icon(
                       Icons.format_list_bulleted,
-                      color: AppColors.greyDarkColor,
+                      color: AppColors.primaryColor,
                     ),
                     SizedBox(width: 8),
                     Text(

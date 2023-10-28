@@ -48,7 +48,7 @@ class MyApp extends ConsumerWidget {
     //ログイン済みか
     final isSignedIn = ref.watch(isSignedInProvider);
     return MaterialApp(
-      title: 'Gohan Map',
+      title: 'Umap',
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomInset: false,
