@@ -25,7 +25,6 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
     
     Map<String, int> placeIdToId = {};
     for (var i = 0; i < candidates.length; i++) {
-      debugPrint(candidates[i].googlePlaceId);
       //idは同じplaceIdのものは同じになる
       if (placeIdToId.containsKey(candidates[i].googlePlaceId)) {
         candidates[i].id = placeIdToId[candidates[i].googlePlaceId];

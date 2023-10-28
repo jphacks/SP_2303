@@ -110,7 +110,6 @@ class APIService {
       var response = await client.get(Uri.parse(apiUrl), headers: {
         'Authorization': 'Bearer $token',
       });
-      debugPrint(response.body);
       if (response.statusCode != 200) {
         throw json.decode(response.body)["detail"];
       }
