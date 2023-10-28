@@ -214,7 +214,8 @@ class _ImgSection extends StatelessWidget {
   Future takePhoto() async {
     try {
       final image = await ImagePicker()
-          .pickImage(source: ImageSource.camera, maxWidth: 1200);
+          .pickImage(
+          source: ImageSource.camera, maxWidth: 1200, maxHeight: 1200);
       // 画像がnullの場合戻る
       if (image == null) return;
 
@@ -229,7 +230,8 @@ class _ImgSection extends StatelessWidget {
   Future pickImage() async {
     try {
       final image = await ImagePicker()
-          .pickImage(source: ImageSource.gallery, maxWidth: 1200);
+          .pickImage(
+          source: ImageSource.gallery, maxWidth: 1200, maxHeight: 1200);
 
       // 画像がnullの場合戻る
       if (image == null) return;
