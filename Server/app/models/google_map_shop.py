@@ -35,6 +35,16 @@ class GoogleMapShop(Base):
         Float(),
         nullable=False,
     )
+    name: str = Column(
+        "name",
+        String(200),
+        nullable=False,
+    )
+    address: str = Column(
+        "address",
+        String(200),
+        nullable=False,
+    )
     anonymousPosts: Mapped[list[AnonymousPost]] = relationship(
         "AnonymousPost", back_populates="googleMapShop"
     )

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 import app.schema.anonymous_post as post_schema
@@ -29,9 +29,55 @@ async def list_anonymous_post(
     return postSchemaList
 
 
-@router.post("/api/anonymous-post")
-async def create_anonymous_post(post: post_schema.AnonymousPostCreate) -> None:
+@router.post("/api/anonymous-post", status_code=status.HTTP_201_CREATED)
+async def create_anonymous_post(
+    timelineId: int = Form(),
+    googleMapShopId: str = Form(),
+    longitude: float = Form(),
+    latitude: float = Form(),
+    star: float = Form(),
+    name: str = Form(),
+    address: str = Form(),
+    imageList: list[UploadFile] = Form(min_length=1),
+    db: Session = Depends(get_db),
+    cred: UserInfo = Depends(get_current_user),
+) -> None:
     logger.debug("request: POST /api/anonymous-post")
+    uid = cred["uid"]
+
+    # GoogleMapShopの追加・更新
+    shop = anonymous_post.update_google_map_shop_by_shopId(
+        db, googleMapShopId, longitude, latitude, name, address
+    )
+    # uidとtimelineIdから匿名投稿を取得
+    posted_content = anonymous_post.fetch_anonymous_post_by_uid_timelineId(
+        db, uid, timelineId
+    )
+    # return posted_content
+    #  すでに投稿がある場合は更新
+    if posted_content is not None:
+        post = anonymous_post.update_anonymous_post(
+            db,
+            uid,
+            timelineId,
+            googleMapShopId,
+            star,
+        )
+        # imageの削除
+        anonymous_post.delete_anonymous_post_image_by_uid_timelineId(
+            db, uid, timelineId
+        )
+    else:
+        # 匿名投稿の追加
+        post = anonymous_post.create_anonymous_post(
+            db,
+            uid,
+            timelineId,
+            googleMapShopId,
+            star,
+        )
+    # 匿名投稿の画像の追加
+    await anonymous_post.create_anonymous_post_image(db, post.id, imageList)
 
 
 @router.delete("/api/anonymous-post", status_code=status.HTTP_204_NO_CONTENT)

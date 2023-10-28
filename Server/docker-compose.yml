@@ -3,7 +3,7 @@ version: "3"
 services:
   app:
     build:
-      dockerfile: ./docker/fastapi/Dockerfile
+      dockerfile: ./docker/fastapi/local/Dockerfile
       context: .
     command: "bash -c 'poetry install --no-root && poetry run uvicorn main:app --host 0.0.0.0 --reload'"
     volumes:
@@ -17,7 +17,7 @@ services:
     image: postgres:16
     restart: always
     ports:
-      - 5432:5432
+      - 5433:5432 # localでpostgresが動いてる際に競合するので、ホスト側は5433とする
     volumes:
       - db_store:/var/lib/postgresql/data
     environment:
