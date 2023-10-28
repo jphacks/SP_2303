@@ -34,7 +34,7 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
   DateTime date = DateTime.now();
   String comment = '';
   double star = 4.0;
-  bool isPublic = false;
+  bool isPublic = true;
   bool avoidkeyBoard = false;
   bool isAPIRequesting = false;
 
@@ -56,6 +56,7 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
         comment = widget.timeline!.comment;
         star = widget.timeline!.star;
         isPublic = widget.timeline!.isPublic;
+        setState(() {});
       }
     });
   }
@@ -127,6 +128,7 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
                   avoidkeyBoard = isFocus;
                 });
               },
+              enablePublic: images.isNotEmpty,
               initialPublic: isPublic,
               onPublicChanged: (isPublic) {
                 setState(() {
@@ -145,11 +147,21 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   foregroundColor: AppColors.whiteColor,
-                  backgroundColor: AppColors.primaryColor,
+                  backgroundColor: (isAPIRequesting)
+                      ? AppColors.greyColor
+                      : AppColors.primaryColor,
                 ),
-                onPressed: () {
-                  onTapComfirm(context);
-                },
+                onPressed: (isAPIRequesting)
+                    ? null
+                    : () async {
+                        setState(() {
+                          isAPIRequesting = true;
+                        });
+                        await onTapComfirm(context);
+                        setState(() {
+                          isAPIRequesting = false;
+                        });
+                      },
                 child: const Text(
                   '決定',
                   style: TextStyle(
@@ -188,9 +200,7 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
   }
 
   //決定ボタンを押した時の処理
-  void onTapComfirm(BuildContext context) {
-    isAPIRequesting = true;
-    //バリデーション
+  Future<void> onTapComfirm(BuildContext context) async {
     if (images.isEmpty && comment.isEmpty) {
       showCupertinoDialog(
         context: context,
@@ -211,47 +221,65 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
       return;
     }
 
-    Future(() async {
-      if (isPublic) {
-        //画像投稿APIを叩く
-        PostAPIRequest req = PostAPIRequest(
-          timelineId: widget.timeline?.id ?? 0,
-          googleMapShopId: widget.shop.googlePlaceId,
-          longitude: widget.shop.shopLongitude,
-          latitude: widget.shop.shopLatitude,
-          star: star,
-          name: widget.shop.shopName,
-          address: widget.shop.shopAddress,
-          imageList: images.map((e) => e.readAsBytesSync()).toList(),
+    if (isPublic && images.isNotEmpty) {
+      //画像投稿APIを叩く
+      PostAPIRequest req = PostAPIRequest(
+        timelineId: widget.timeline?.id ?? 0,
+        googleMapShopId: widget.shop.googlePlaceId,
+        longitude: widget.shop.shopLongitude,
+        latitude: widget.shop.shopLatitude,
+        star: star,
+        name: widget.shop.shopName,
+        address: widget.shop.shopAddress,
+        imageList: images.map((e) => e.readAsBytesSync()).toList(),
+      );
+      final String result = await APIService.requestPostAPI(
+          req, await ref.watch(userProvider)?.getIdToken());
+      if (result != "" && context.mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('投稿に失敗しました'),
+              content: Text(result),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text('閉じる'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    return;
+                  },
+                ),
+              ],
+            );
+          },
         );
-        final String result = await APIService.requestPostAPI(
-            req, await ref.watch(userProvider)?.getIdToken());
-        print("result: $result");
-      } else if (widget.timeline != null) {
-        //TODO:画像削除APIを叩く
+        return;
       }
-      isAPIRequesting = false;
-      //wantToGoフラグがTrueの場合はFalseに変更
-      if (widget.shop.wantToGoFlg) {
-        final shop = Shop()
-          ..id = widget.shop.id
-          ..shopName = widget.shop.shopName
-          ..shopAddress = widget.shop.shopAddress
-          ..googlePlaceId = widget.shop.googlePlaceId
-          ..shopLatitude = widget.shop.shopLatitude
-          ..shopLongitude = widget.shop.shopLongitude
-          ..shopMapIconKind = widget.shop.shopMapIconKind
-          ..wantToGoFlg = false
-          ..createdAt = widget.shop.createdAt
-          ..updatedAt = DateTime.now();
-        await IsarUtils.createShop(shop);
-      }
-      if (widget.timeline != null) {
-        _updateTimeline();
-      } else {
-        _addToDB();
-      }
-    });
+    } else if (widget.timeline != null) {
+      //TODO:画像削除APIを叩く
+    }
+    isAPIRequesting = false;
+    //wantToGoフラグがTrueの場合はFalseに変更
+    if (widget.shop.wantToGoFlg) {
+      final shop = Shop()
+        ..id = widget.shop.id
+        ..shopName = widget.shop.shopName
+        ..shopAddress = widget.shop.shopAddress
+        ..googlePlaceId = widget.shop.googlePlaceId
+        ..shopLatitude = widget.shop.shopLatitude
+        ..shopLongitude = widget.shop.shopLongitude
+        ..shopMapIconKind = widget.shop.shopMapIconKind
+        ..wantToGoFlg = false
+        ..createdAt = widget.shop.createdAt
+        ..updatedAt = DateTime.now();
+      await IsarUtils.createShop(shop);
+    }
+    if (widget.timeline != null) {
+      _updateTimeline();
+    } else {
+      _addToDB();
+    }
   }
 
   //DBに投稿を追加
