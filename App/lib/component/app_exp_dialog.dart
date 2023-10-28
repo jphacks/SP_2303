@@ -9,7 +9,7 @@ Future getAndShowExpDialog({
 }) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   //経験値を増加
-  prefs.setInt("exp", prefs.getInt("exp") ?? 0 + exp);
+  prefs.setInt("exp", (prefs.getInt("exp") ?? 0) + exp);
   if (context.mounted) {
     return showCupertinoDialog(
       context: context,
