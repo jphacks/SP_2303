@@ -75,6 +75,7 @@ dependencies:
   appinio_swiper: ^2.0.3
   firebase_auth: ^4.11.1
   sign_in_button: ^3.2.0
+  http_parser: ^4.0.2
 
 dev_dependencies:
   flutter_test:

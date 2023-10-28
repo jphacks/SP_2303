@@ -220,11 +220,60 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
       );
       return;
     }
+    if (!(isPublic && images.isNotEmpty) && widget.timeline != null) {
+      //画像がないか非公開でかつ編集の時
+      //画像削除APIを叩く。新規投稿の時は走らない
+      final String result = await APIService.requestDeleteAPI(
+          widget.timeline!.id, await ref.watch(userProvider)?.getIdToken());
+      if (result != "" && result != "Post not found" && context.mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('投稿の削除に失敗しました'),
+              content: Text(result),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text('閉じる'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    return;
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+    }
+    isAPIRequesting = false;
+    //wantToGoフラグがTrueの場合はFalseに変更
+    int timelineId = widget.timeline?.id ?? -1;
+    if (widget.shop.wantToGoFlg) {
+      final shop = Shop()
+        ..id = widget.shop.id
+        ..shopName = widget.shop.shopName
+        ..shopAddress = widget.shop.shopAddress
+        ..googlePlaceId = widget.shop.googlePlaceId
+        ..shopLatitude = widget.shop.shopLatitude
+        ..shopLongitude = widget.shop.shopLongitude
+        ..shopMapIconKind = widget.shop.shopMapIconKind
+        ..wantToGoFlg = false
+        ..createdAt = widget.shop.createdAt
+        ..updatedAt = DateTime.now();
+      await IsarUtils.createShop(shop);
+    }
+    if (widget.timeline != null) {
+      _updateTimeline();
+    } else {
+      timelineId = await _addToDB();
+    }
 
-    if (isPublic && images.isNotEmpty) {
+    if (isPublic && images.isNotEmpty && timelineId != -1) {
       //画像投稿APIを叩く
       PostAPIRequest req = PostAPIRequest(
-        timelineId: widget.timeline?.id ?? 0,
+        timelineId: timelineId,
         googleMapShopId: widget.shop.googlePlaceId,
         longitude: widget.shop.shopLongitude,
         latitude: widget.shop.shopLatitude,
@@ -256,34 +305,11 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
         );
         return;
       }
-    } else if (widget.timeline != null) {
-      //TODO:画像削除APIを叩く
-    }
-    isAPIRequesting = false;
-    //wantToGoフラグがTrueの場合はFalseに変更
-    if (widget.shop.wantToGoFlg) {
-      final shop = Shop()
-        ..id = widget.shop.id
-        ..shopName = widget.shop.shopName
-        ..shopAddress = widget.shop.shopAddress
-        ..googlePlaceId = widget.shop.googlePlaceId
-        ..shopLatitude = widget.shop.shopLatitude
-        ..shopLongitude = widget.shop.shopLongitude
-        ..shopMapIconKind = widget.shop.shopMapIconKind
-        ..wantToGoFlg = false
-        ..createdAt = widget.shop.createdAt
-        ..updatedAt = DateTime.now();
-      await IsarUtils.createShop(shop);
-    }
-    if (widget.timeline != null) {
-      _updateTimeline();
-    } else {
-      _addToDB();
-    }
+    } 
   }
 
   //DBに投稿を追加
-  Future<void> _addToDB() async {
+  Future<int> _addToDB() async {
     List<String> imagePathList = [];
     for (var image in images) {
       String? imagePath = await saveImageFile(image);
@@ -306,8 +332,9 @@ class _PlacePostPageState extends ConsumerState<PlacePostPage> {
       //振動
       Haptic.onSuccess();
       Navigator.pop(context);
-      return;
+      return timeline.id;
     }
+    return -1;
   }
 
   //DBの投稿を更新

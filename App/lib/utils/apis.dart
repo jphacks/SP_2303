@@ -188,4 +188,23 @@ class APIService {
       return e.toString();
     }
   }
+
+  static Future<String> requestDeleteAPI(int timelineID, String? token) async {
+    const String apiUrl = 'https://gohanmap.almikan.com/api/anonymous-post';
+    try {
+      var response = await client.delete(Uri.parse(apiUrl),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json'
+          },
+          body: json.encode({'timelineId': timelineID}));
+      if (response.statusCode != 204) {
+        throw json.decode(response.body)["detail"];
+      }
+    } catch (e) {
+      logger.e(e);
+      return (e.toString());
+    }
+    return "";
+  }
 }
