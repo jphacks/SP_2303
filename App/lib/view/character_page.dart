@@ -63,7 +63,7 @@ class CharacterPageState extends State<CharacterPage> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           "レベル",
@@ -71,11 +71,13 @@ class CharacterPageState extends State<CharacterPage> {
                               color: AppColors.primaryColor,
                               fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(width: 5),
+                        SizedBox(width: 6),
                         Text(
                           "21",
                           style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w600),
+                            fontFamily: "Nunito",
+                            fontSize: 30,
+                          ),
                         )
                       ],
                     ),
@@ -85,19 +87,25 @@ class CharacterPageState extends State<CharacterPage> {
                         Text(
                           "2320",
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
+                            fontFamily: "Nunito",
+                            fontSize: 20,
+                          ),
                         ),
                         SizedBox(width: 4),
                         Text(
                           "/",
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         SizedBox(width: 3),
                         Text(
                           "2500",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
+                            fontFamily: "Nunito",
+                            fontSize: 16,
+                          ),
                         )
                       ],
                     )
@@ -144,7 +152,9 @@ class CharacterPageState extends State<CharacterPage> {
                       Text(
                         "150",
                         style: TextStyle(
-                            fontSize: 36, fontWeight: FontWeight.w800),
+                          fontFamily: "Nunito",
+                          fontSize: 36,
+                        ),
                       ),
                       Text(
                         "(今月 +20)",
@@ -183,7 +193,9 @@ class CharacterPageState extends State<CharacterPage> {
                       Text(
                         "300",
                         style: TextStyle(
-                            fontSize: 36, fontWeight: FontWeight.w800),
+                          fontFamily: "Nunito",
+                          fontSize: 36,
+                        ),
                       ),
                       Text(
                         "(今月 +50)",
@@ -198,13 +210,13 @@ class CharacterPageState extends State<CharacterPage> {
                 children: [
                   Icon(
                     Icons.restaurant,
-                    size: 24,
+                    size: 28,
                     color: AppColors.primaryColor,
                   ),
-                  SizedBox(width: 8),
+                  SizedBox(width: 12),
                   Text(
                     "食べたもの記録",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   )
                 ],
               ),
