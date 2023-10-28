@@ -32,10 +32,6 @@ class AppRatingBar extends StatelessWidget {
             width: 40,
             height: 40,
             margin: const EdgeInsets.all(4),
-            // child: SvgPicture.asset(
-            //   'images/stars/all.svg',
-            //   fit: BoxFit.contain,
-            // ),
             child: Image.asset(
               "images/stars/all.png",
               height: 40,
@@ -46,10 +42,6 @@ class AppRatingBar extends StatelessWidget {
             width: 40,
             height: 40,
             margin: const EdgeInsets.all(4),
-            // child: SvgPicture.asset(
-            //   'images/stars/half.svg',
-            //   fit: BoxFit.contain,
-            // ),
             child: Image.asset(
               "images/stars/half.png",
               height: 40,
@@ -60,10 +52,6 @@ class AppRatingBar extends StatelessWidget {
             width: 40,
             height: 40,
             margin: const EdgeInsets.all(4),
-            // child: SvgPicture.asset(
-            //   'images/stars/none.svg',
-            //   fit: BoxFit.contain,
-            // ),
             child: Image.asset(
               "images/stars/none.png",
               height: 40,
