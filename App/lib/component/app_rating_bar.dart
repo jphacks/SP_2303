@@ -1,6 +1,5 @@
 import 'package:flutter/Material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 //レーティングのバー
 class AppRatingBar extends StatelessWidget {
@@ -30,32 +29,48 @@ class AppRatingBar extends StatelessWidget {
         onRatingUpdate: onRatingUpdate,
         ratingWidget: RatingWidget(
           full: Container(
-            width: 300,
-            height: 300,
-            margin: const EdgeInsets.only(top: 20, bottom: 12),
-            child: SvgPicture.asset(
-              'images/stars/all.svg',
-              fit: BoxFit.contain,
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.all(4),
+            // child: SvgPicture.asset(
+            //   'images/stars/all.svg',
+            //   fit: BoxFit.contain,
+            // ),
+            child: Image.asset(
+              "images/stars/all.png",
+              height: 40,
+              width: 40,
             ),
           ),
           half: Container(
-            width: 300,
-            height: 300,
-            margin: const EdgeInsets.only(top: 20, bottom: 12),
-            child: SvgPicture.asset(
-              'images/stars/half.svg',
-              fit: BoxFit.contain,
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.all(4),
+            // child: SvgPicture.asset(
+            //   'images/stars/half.svg',
+            //   fit: BoxFit.contain,
+            // ),
+            child: Image.asset(
+              "images/stars/half.png",
+              height: 40,
+              width: 40,
             ),
           ),
           empty: Container(
-            width: 300,
-            height: 300,
-            margin: const EdgeInsets.only(top: 20, bottom: 12),
-            child: SvgPicture.asset(
-              'images/stars/none.svg',
-              fit: BoxFit.contain,
+            width: 40,
+            height: 40,
+            margin: const EdgeInsets.all(4),
+            // child: SvgPicture.asset(
+            //   'images/stars/none.svg',
+            //   fit: BoxFit.contain,
+            // ),
+            child: Image.asset(
+              "images/stars/none.png",
+              height: 40,
+              width: 40,
             ),
           ),
+          //
         ),
       ),
     );
