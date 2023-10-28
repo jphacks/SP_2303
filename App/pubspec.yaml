@@ -76,6 +76,7 @@ dependencies:
   firebase_auth: ^4.11.1
   sign_in_button: ^3.2.0
   flutter_launcher_icons: ^0.13.1
+  http_parser: ^4.0.2
 
 dev_dependencies:
   flutter_test:

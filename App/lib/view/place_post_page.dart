@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/Cupertino.dart';
 import 'package:flutter/Material.dart';
 import 'package:flutter_haptic/haptic.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/collections/timeline.dart';
 import 'package:gohan_map/component/post_food_widget.dart';
+import 'package:gohan_map/utils/apis.dart';
+import 'package:gohan_map/utils/auth_state.dart';
 import 'package:gohan_map/utils/common.dart';
 import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/view/place_detail_page.dart';
@@ -15,7 +18,7 @@ import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_modal.dart';
 
 // 飲食店でのごはん投稿・編集画面
-class PlacePostPage extends StatefulWidget {
+class PlacePostPage extends ConsumerStatefulWidget {
   final Shop shop;
   final Timeline? timeline; // 編集ページの際に外部から初期データを渡す
 
@@ -23,17 +26,17 @@ class PlacePostPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<PlacePostPage> createState() => _PlacePostPageState();
+  ConsumerState<PlacePostPage> createState() => _PlacePostPageState();
 }
 
-class _PlacePostPageState extends State<PlacePostPage> {
+class _PlacePostPageState extends ConsumerState<PlacePostPage> {
   List<File> images = [];
   DateTime date = DateTime.now();
   String comment = '';
   double star = 4.0;
-  bool isPublic = false;
+  bool isPublic = true;
   bool avoidkeyBoard = false;
-  bool isLoading = true;
+  bool isAPIRequesting = false;
 
   @override
   void initState() {
@@ -53,20 +56,13 @@ class _PlacePostPageState extends State<PlacePostPage> {
         comment = widget.timeline!.comment;
         star = widget.timeline!.star;
         isPublic = widget.timeline!.isPublic;
+        setState(() {});
       }
-      setState(() {
-        // reload
-        isLoading = false;
-      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const CircularProgressIndicator();
-    }
-
     return AppModal(
       initialChildSize: 0.9,
       avoidKeyboardFlg: avoidkeyBoard,
@@ -132,6 +128,7 @@ class _PlacePostPageState extends State<PlacePostPage> {
                   avoidkeyBoard = isFocus;
                 });
               },
+              enablePublic: images.isNotEmpty,
               initialPublic: isPublic,
               onPublicChanged: (isPublic) {
                 setState(() {
@@ -150,11 +147,21 @@ class _PlacePostPageState extends State<PlacePostPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   foregroundColor: AppColors.whiteColor,
-                  backgroundColor: AppColors.primaryColor,
+                  backgroundColor: (isAPIRequesting)
+                      ? AppColors.greyColor
+                      : AppColors.primaryColor,
                 ),
-                onPressed: () {
-                  onTapComfirm(context);
-                },
+                onPressed: (isAPIRequesting)
+                    ? null
+                    : () async {
+                        setState(() {
+                          isAPIRequesting = true;
+                        });
+                        await onTapComfirm(context);
+                        setState(() {
+                          isAPIRequesting = false;
+                        });
+                      },
                 child: const Text(
                   '決定',
                   style: TextStyle(
@@ -193,8 +200,7 @@ class _PlacePostPageState extends State<PlacePostPage> {
   }
 
   //決定ボタンを押した時の処理
-  void onTapComfirm(BuildContext context) {
-    //バリデーション
+  Future<void> onTapComfirm(BuildContext context) async {
     if (images.isEmpty && comment.isEmpty) {
       showCupertinoDialog(
         context: context,
@@ -214,38 +220,96 @@ class _PlacePostPageState extends State<PlacePostPage> {
       );
       return;
     }
-
-    if (isPublic) {
-      //TODO:画像投稿APIを叩く
-    } else if (widget.timeline != null) {
-      //TODO:画像削除APIを叩く
+    if (!(isPublic && images.isNotEmpty) && widget.timeline != null) {
+      //画像がないか非公開でかつ編集の時
+      //画像削除APIを叩く。新規投稿の時は走らない
+      final String result = await APIService.requestDeleteAPI(
+          widget.timeline!.id, await ref.watch(userProvider)?.getIdToken());
+      if (result != "" && result != "Post not found" && context.mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('投稿の削除に失敗しました'),
+              content: Text(result),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text('閉じる'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    return;
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
     }
-    Future(() async {
-      //wantToGoフラグがTrueの場合はFalseに変更
-      if (widget.shop.wantToGoFlg) {
-        final shop = Shop()
-          ..id = widget.shop.id
-          ..shopName = widget.shop.shopName
-          ..shopAddress = widget.shop.shopAddress
-          ..googlePlaceId = widget.shop.googlePlaceId
-          ..shopLatitude = widget.shop.shopLatitude
-          ..shopLongitude = widget.shop.shopLongitude
-          ..shopMapIconKind = widget.shop.shopMapIconKind
-          ..wantToGoFlg = false
-          ..createdAt = widget.shop.createdAt
-          ..updatedAt = DateTime.now();
-        await IsarUtils.createShop(shop);
+    isAPIRequesting = false;
+    //wantToGoフラグがTrueの場合はFalseに変更
+    int timelineId = widget.timeline?.id ?? -1;
+    if (widget.shop.wantToGoFlg) {
+      final shop = Shop()
+        ..id = widget.shop.id
+        ..shopName = widget.shop.shopName
+        ..shopAddress = widget.shop.shopAddress
+        ..googlePlaceId = widget.shop.googlePlaceId
+        ..shopLatitude = widget.shop.shopLatitude
+        ..shopLongitude = widget.shop.shopLongitude
+        ..shopMapIconKind = widget.shop.shopMapIconKind
+        ..wantToGoFlg = false
+        ..createdAt = widget.shop.createdAt
+        ..updatedAt = DateTime.now();
+      await IsarUtils.createShop(shop);
+    }
+    if (widget.timeline != null) {
+      _updateTimeline();
+    } else {
+      timelineId = await _addToDB();
+    }
+
+    if (isPublic && images.isNotEmpty && timelineId != -1) {
+      //画像投稿APIを叩く
+      PostAPIRequest req = PostAPIRequest(
+        timelineId: timelineId,
+        googleMapShopId: widget.shop.googlePlaceId,
+        longitude: widget.shop.shopLongitude,
+        latitude: widget.shop.shopLatitude,
+        star: star,
+        name: widget.shop.shopName,
+        address: widget.shop.shopAddress,
+        imageList: images.map((e) => e.readAsBytesSync()).toList(),
+      );
+      final String result = await APIService.requestPostAPI(
+          req, await ref.watch(userProvider)?.getIdToken());
+      if (result != "" && context.mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text('投稿に失敗しました'),
+              content: Text(result),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text('閉じる'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    return;
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
       }
-      if (widget.timeline != null) {
-        _updateTimeline();
-      } else {
-        _addToDB();
-      }
-    });
+    } 
   }
 
   //DBに投稿を追加
-  Future<void> _addToDB() async {
+  Future<int> _addToDB() async {
     List<String> imagePathList = [];
     for (var image in images) {
       String? imagePath = await saveImageFile(image);
@@ -268,8 +332,9 @@ class _PlacePostPageState extends State<PlacePostPage> {
       //振動
       Haptic.onSuccess();
       Navigator.pop(context);
-      return;
+      return timeline.id;
     }
+    return -1;
   }
 
   //DBの投稿を更新

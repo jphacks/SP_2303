@@ -123,6 +123,8 @@ class IsarUtils {
     await isar!.writeTxn(() async {
       await isar!.timelines.put(timeline);
     });
+    //idを取得
+    return;
   }
 
   // timelineの削除

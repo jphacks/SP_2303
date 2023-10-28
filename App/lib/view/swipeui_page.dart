@@ -44,41 +44,7 @@ class SwipeUIPageState extends State<SwipeUIPage> {
         ),
       ));
     }
-    // candidates = [
-    //   CandidateModel(
-    //     name: "麺屋 てすと",
-    //     address: "サンプル県サンプルサンプル",
-    //     latitude: 35.681236,
-    //     longitude: 139.767125,
-    //     img: Image.network(
-    //       "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
-    //       fit: BoxFit.cover,
-    //     ),
-    //     star: 5,
-    //   ),
-    //   CandidateModel(
-    //     name: "麺屋 てすと2",
-    //     address: "サンプルサンプルサンプル県サンプルサンプル",
-    //     latitude: 35.684236,
-    //     longitude: 139.762125,
-    //     img: Image.network(
-    //       "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
-    //       fit: BoxFit.cover,
-    //     ),
-    //     star: 4,
-    //   ),
-    //   CandidateModel(
-    //     name: "麺屋 てすと3てすと3てすと3てすと3てすと3てすと3",
-    //     address: "サンプル県サンプルサンプル",
-    //     latitude: 35.680236,
-    //     longitude: 139.769125,
-    //     img: Image.network(
-    //       "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
-    //       fit: BoxFit.cover,
-    //     ),
-    //     star: 4.5,
-    //   ),
-    // ];
+
     super.initState();
   }
 
