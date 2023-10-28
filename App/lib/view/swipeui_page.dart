@@ -6,12 +6,15 @@ import 'package:flutter/Material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_rating_bar.dart';
+import 'package:gohan_map/utils/apis.dart';
 import 'package:gohan_map/view/swipe_result_page.dart';
 
 class SwipeUIPage extends StatefulWidget {
   const SwipeUIPage({
     Key? key,
+    required this.results,
   }) : super(key: key);
+  final List<SwipeUIAPIResult> results;
 
   @override
   State<SwipeUIPage> createState() => SwipeUIPageState();
@@ -26,41 +29,56 @@ class SwipeUIPageState extends State<SwipeUIPage> {
   List<CandidateModel> candidates = [];
   @override
   void initState() {
-    candidates = [
-      CandidateModel(
-        name: "麺屋 てすと",
-        address: "サンプル県サンプルサンプル",
-        latitude: 35.681236,
-        longitude: 139.767125,
+    for (var result in widget.results) {
+      //String img to Image
+      candidates.add(CandidateModel(
+        googlePlaceId: result.googleMapShopId,
+        name: result.name,
+        address: result.address,
+        latitude: result.latitude,
+        longitude: result.longitude,
+        star: result.star,
         img: Image.network(
-          "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
+          result.imageURL,
           fit: BoxFit.cover,
         ),
-        star: 5,
-      ),
-      CandidateModel(
-        name: "麺屋 てすと2",
-        address: "サンプルサンプルサンプル県サンプルサンプル",
-        latitude: 35.684236,
-        longitude: 139.762125,
-        img: Image.network(
-          "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
-          fit: BoxFit.cover,
-        ),
-        star: 4,
-      ),
-      CandidateModel(
-        name: "麺屋 てすと3てすと3てすと3てすと3てすと3てすと3",
-        address: "サンプル県サンプルサンプル",
-        latitude: 35.680236,
-        longitude: 139.769125,
-        img: Image.network(
-          "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
-          fit: BoxFit.cover,
-        ),
-        star: 4.5,
-      ),
-    ];
+      ));
+    }
+    // candidates = [
+    //   CandidateModel(
+    //     name: "麺屋 てすと",
+    //     address: "サンプル県サンプルサンプル",
+    //     latitude: 35.681236,
+    //     longitude: 139.767125,
+    //     img: Image.network(
+    //       "https://cdn-ak.f.st-hatena.com/images/fotolife/M/Manpapa/20211119/20211119142229.jpg",
+    //       fit: BoxFit.cover,
+    //     ),
+    //     star: 5,
+    //   ),
+    //   CandidateModel(
+    //     name: "麺屋 てすと2",
+    //     address: "サンプルサンプルサンプル県サンプルサンプル",
+    //     latitude: 35.684236,
+    //     longitude: 139.762125,
+    //     img: Image.network(
+    //       "https://plus.chunichi.co.jp/pic/236/p1/878_0_01.jpg",
+    //       fit: BoxFit.cover,
+    //     ),
+    //     star: 4,
+    //   ),
+    //   CandidateModel(
+    //     name: "麺屋 てすと3てすと3てすと3てすと3てすと3てすと3",
+    //     address: "サンプル県サンプルサンプル",
+    //     latitude: 35.680236,
+    //     longitude: 139.769125,
+    //     img: Image.network(
+    //       "https://tblg.k-img.com/restaurant/images/Rvw/155995/640x640_rect_155995886.jpg",
+    //       fit: BoxFit.cover,
+    //     ),
+    //     star: 4.5,
+    //   ),
+    // ];
     super.initState();
   }
 
@@ -430,6 +448,7 @@ class AnonymousPostCard extends StatelessWidget {
 class CandidateModel {
   int? id;
   bool? isPicked;
+  String googlePlaceId;
   String name;
   String address;
   double latitude;
@@ -440,6 +459,7 @@ class CandidateModel {
   CandidateModel({
     this.id,
     this.isPicked,
+    required this.googlePlaceId,
     required this.name,
     required this.address,
     required this.latitude,
@@ -495,6 +515,9 @@ Widget swipeRightButton(AppinioSwiperController controller) {
             color: CupertinoColors.white,
             size: 30,
           ),
+          SizedBox(
+            width: 8,
+          ),
           Text("気になる！",
               style: TextStyle(
                 color: CupertinoColors.white,
@@ -533,6 +556,9 @@ Widget swipeLeftButton(AppinioSwiperController controller) {
             Icons.thumb_down,
             color: CupertinoColors.white,
             size: 30,
+          ),
+          SizedBox(
+            width: 8,
           ),
           Text("気分じゃない",
               style: TextStyle(

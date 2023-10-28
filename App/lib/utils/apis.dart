@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:gohan_map/utils/logger.dart';
 import 'package:http/http.dart' as http;
-import 'package:isar/isar.dart';
 import 'package:latlong2/latlong.dart';
 
 http.Client client = http.Client(); // HTTPクライアントを格納する
@@ -63,59 +62,69 @@ Future<List<PlaceApiRestaurantResult>> searchRestaurantsByGoogleMapApi(
 class SwipeUIAPIResult {
   final String name;
   final String address;
+  final String googleMapShopId;
   final double latitude;
   final double longitude;
   final double star;
-  final byte image;
+  final String imageURL;
 
   SwipeUIAPIResult(
       {required this.name,
       required this.address,
+      required this.googleMapShopId,
       required this.latitude,
       required this.longitude,
       required this.star,
-      required this.image});
+      required this.imageURL});
 
   factory SwipeUIAPIResult.fromJson(Map<String, dynamic> data) {
-    String nameResult = data["name"];
-    String addressResult = data["address"];
-    double latitudeResult = data["latitude"];
-    double longitudeResult = data["longitude"];
+    String nameResult = data["googleMapShop"]["name"];
+    String addressResult = data["googleMapShop"]["address"];
+    String shopIdResult = data["googleMapShop"]["googleMapShopId"];
+    double latitudeResult = data["googleMapShop"]["latitude"];
+    double longitudeResult = data["googleMapShop"]["longitude"];
     double starResult = data["star"];
-    byte imageResult = data["image"];
+    String imageResult = data["imageURL"];
     return SwipeUIAPIResult(
         name: nameResult,
         address: addressResult,
+        googleMapShopId: shopIdResult,
         latitude: latitudeResult,
         longitude: longitudeResult,
         star: starResult,
-        image: imageResult);
+        imageURL: imageResult);
   }
 }
 
+
+//
+// アプリのAPIを叩くためのクラス
+//
 class APIService {
-  static Future<List<SwipeUIAPIResult>?> requestSwipeAPI(
-      LatLng latlng, int radius, String token) async {
+  static Future<(List<SwipeUIAPIResult>, String)> requestSwipeAPI(
+      LatLng latlng, int radius, String? token) async {
     final String apiUrl =
         'https://gohanmap.almikan.com/api/swipe/anonymous-post?latitude=${latlng.latitude}&longitude=${latlng.longitude}&radius=$radius';
     List<SwipeUIAPIResult> result = [];
-
     try {
-      var response = await client.get(Uri.parse(apiUrl));
+      var response = await client.get(Uri.parse(apiUrl), headers: {
+        'Authorization': 'Bearer $token',
+      });
       debugPrint(response.body);
-      if (response.statusCode != 200) throw "通信に失敗しました";
-
-      final responseData = json.decode(response.body);
-      if (responseData["status"] != "OK") throw "APIリクエストに失敗しました";
-
-      for (var item in responseData["results"]) {
+      if (response.statusCode != 200) {
+        throw json.decode(response.body)["detail"];
+      }
+      final responseData = json.decode(utf8.decode(response.bodyBytes));
+      for (var item in responseData) {
         result.add(SwipeUIAPIResult.fromJson(item));
       }
     } catch (e) {
       logger.e(e);
-      return null;
+      return (result, e.toString());
     }
-
-    return result;
+    if (result.isEmpty) {
+      return (result, "紹介できるお店が近くにありませんでした..");
+    }
+    return (result, "");
   }
 }

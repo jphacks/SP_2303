@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_rating_bar.dart';
+import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/view/swipeui_page.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -49,7 +51,7 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Text(
-                "登録したいお店を選んでください",
+                "行ってみたいお店を選んでください",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -90,6 +92,26 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                     cnt:
                         candidates.where((element) => element.isPicked!).length,
                     onPressed: () {
+                      //登録ボタンを押したときの処理
+                      List<CandidateModel> pickedCandidates = candidates
+                          .where((element) => element.isPicked!)
+                          .toList();
+                      for (var c in pickedCandidates) {
+                        //isarに登録
+                        IsarUtils.createShop(
+                          Shop()
+                            ..googlePlaceId = c.googlePlaceId
+                            ..shopName = c.name
+                            ..shopAddress = c.address
+                            ..shopMapIconKind = "default" //アイコンの種類はデフォルト
+                            ..wantToGoFlg = true
+                            ..shopLatitude = c.latitude
+                            ..shopLongitude = c.longitude
+                            ..createdAt = DateTime.now()
+                            ..updatedAt = DateTime.now(),
+                        );
+                      }
+                      
                       //Cupertinoダイアログ
                       showCupertinoDialog(
                         context: context,
@@ -109,6 +131,7 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                         },
                       ).then((value) => Navigator.popUntil(
                           context, (route) => route.isFirst));
+                      
                     },
                   ),
                 ],
@@ -263,20 +286,21 @@ class _SwipeResCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(4, 4, 4, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
               child: Text(
-                "ここに店名ここに店名ここに店名ここに店名ここに店名",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                candidates[index].name,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, height: 1.3),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(4, 2, 4, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 2, 4, 0),
               child: Text(
-                "ここに住所ここに住所ここに住所ここに住所ここに住所ここに住所",
-                style: TextStyle(fontSize: 12),
+                candidates[index].address,
+                style: const TextStyle(fontSize: 12, height: 1.2),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -316,29 +340,25 @@ class SwipeResMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final len = candidates.length;
-    //zoomの計算
-    //たて200px
-    //よこ300px
+    //zoomの計算を行う
     double? zoom = 14;
-    if (len >= 2 &&
+    if (minLat != maxLat &&
+        minLng != maxLng &&
         minLat != null &&
         maxLat != null &&
         minLng != null &&
         maxLng != null) {
       final latDiff = maxLat! - minLat!;
       final lngDiff = maxLng! - minLng!;
-      //var pixelPerLat = pow(2, zoom + 8) / 360;
       var pixelPerLat = 120 / latDiff;
       var pixelPerLng = 240 / lngDiff / cos(maxLat! * pi / 180);
       zoom = log(360 * min(pixelPerLat, pixelPerLng)) / log(2) - 8;
-      //zoom = 16 - (diff * 100);
+      zoom = min(zoom, 20);
     }
     //centerの計算
     final LatLng? centerLat = (minLat != null && maxLat != null)
         ? LatLng((minLat! + maxLat!) / 2, (minLng! + maxLng!) / 2)
         : null;
-
     return Container(
       height: 200,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
