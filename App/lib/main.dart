@@ -67,6 +67,7 @@ enum TabItem {
   map,
   swipe,
   character,
+  setting,
 }
 
 //タブバー(BottomNavigationBar)を含んだ全体の画面
@@ -82,6 +83,7 @@ class _MainPageState extends State<MainPage> {
     TabItem.map: GlobalKey<NavigatorState>(),
     TabItem.swipe: GlobalKey<NavigatorState>(),
     TabItem.character: GlobalKey<NavigatorState>(),
+    TabItem.setting: GlobalKey<NavigatorState>(),
   };
 
   //globalKeyは、ウィジェットの状態を保存するためのもの
@@ -89,6 +91,7 @@ class _MainPageState extends State<MainPage> {
     TabItem.map: GlobalKey<State>(),
     TabItem.swipe: GlobalKey<State>(),
     TabItem.character: GlobalKey<State>(),
+    TabItem.setting: GlobalKey<State>(),
   };
 
   final allpostKey = GlobalKey<AllPostPageState>();
@@ -109,6 +112,10 @@ class _MainPageState extends State<MainPage> {
           _buildTabItem(
             TabItem.character,
             '/character',
+          ),
+          _buildTabItem(
+            TabItem.setting,
+            '/setting',
           ),
         ],
       ),
