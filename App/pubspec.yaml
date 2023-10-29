@@ -145,16 +145,16 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 flutter_native_splash:
-  color: "#1976D2"
-  image: "images/splash.png"
-  color_dark: "#262626"
-  image_dark: "images/splash.png"
+  color: "#F86F35"
+  image: "images/splash_umap.png"
+  color_dark: "#F86F35"
+  image_dark: "images/splash_umap.png"
   fullscreen: true
   android_12:
-    icon_background_color: "#1976D2"
-    image: "images/splash_android12.png"
-    icon_background_color_dark: "#262626"
-    image_dark: "images/splash_android12.png"
+    icon_background_color: "#F86F35"
+    image: "images/splash_umap.png"
+    icon_background_color_dark: "#F86F35"
+    image_dark: "images/splash_umap.png"
 
 flutter_icons:       
   android: true
