@@ -127,19 +127,27 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                           .where((element) => element.isPicked!)
                           .toList();
                       for (var c in pickedCandidates) {
-                        //isarに登録
-                        IsarUtils.createShop(
-                          Shop()
-                            ..googlePlaceId = c.googlePlaceId
-                            ..shopName = c.name
-                            ..shopAddress = c.address
-                            ..shopMapIconKind = "default" //アイコンの種類はデフォルト
-                            ..wantToGoFlg = true
-                            ..shopLatitude = c.latitude
-                            ..shopLongitude = c.longitude
-                            ..createdAt = DateTime.now()
-                            ..updatedAt = DateTime.now(),
-                        );
+                        //すでに登録されているかどうか
+                        IsarUtils.getShopByGooglePlaceId(c.googlePlaceId)
+                            .then((value) => {
+                                  if (value == null)
+                                    {
+                                      //isarに登録
+                                      IsarUtils.createShop(
+                                        Shop()
+                                          ..googlePlaceId = c.googlePlaceId
+                                          ..shopName = c.name
+                                          ..shopAddress = c.address
+                                          ..shopMapIconKind =
+                                              "default" //アイコンの種類はデフォルト
+                                          ..wantToGoFlg = true
+                                          ..shopLatitude = c.latitude
+                                          ..shopLongitude = c.longitude
+                                          ..createdAt = DateTime.now()
+                                          ..updatedAt = DateTime.now(),
+                                      )
+                                    }
+                                });
                       }
                       //Cupertinoダイアログ
                       showCupertinoDialog(
