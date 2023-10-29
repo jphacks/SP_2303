@@ -140,6 +140,9 @@ flutter:
         - asset: icon/font/SF-Pro-Text-Bold.otf
           weight: 700
         - asset: icon/font/SF-Pro-Text-Regular.otf
+    - family: Nunito
+      fonts:
+        - asset: icon/font/Nunito-Bold.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
