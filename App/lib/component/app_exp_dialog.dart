@@ -54,7 +54,7 @@ class Level {
 
   Level(int exp) {
     this.exp = exp;
-    level = (exp / diff).floor();
+    level = (exp / diff).floor() + 1;
     expOfCurLevel = exp % diff;
     needExpNextLevel = diff;
   }
