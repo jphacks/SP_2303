@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/collections/timeline.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/utils/common.dart';
@@ -17,36 +18,52 @@ class CharacterPage extends StatefulWidget {
 }
 
 class CharacterPageState extends State<CharacterPage> {
-  List<Timeline>? shopTimeline;
+  List<Timeline> shopTimeline = [];
+  List<Shop> shops = [];
 
   @override
   void initState() {
     super.initState();
     () async {
+      final allShops = await IsarUtils.getAllShops();
       final timelines = await IsarUtils.getAllTimelines();
       setState(() {
         shopTimeline = timelines;
+        shops = allShops;
       });
     }();
   }
 
   void reload() {
     () async {
+      final allShops = await IsarUtils.getAllShops();
       final timelines = await IsarUtils.getAllTimelines();
       setState(() {
         shopTimeline = timelines;
+        shops = allShops;
       });
     }();
   }
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    DateTime thisMonthDay = DateTime(now.year, now.month, 1);
+
+    int allNewShopSize = shops.where((el) => el.wantToGoFlg == false).length;
+    int allTimelineSize = shopTimeline.length;
+    // TODO: 店単位の初投稿の日付が今月のものの個数を取得するように変更する
+    int thisMonthNewShopSize = shops
+        .where((el) =>
+            el.wantToGoFlg == false &&
+            el.createdAt.compareTo(thisMonthDay) == 1)
+        .length;
+    int thisMonthTimelineSize =
+        shopTimeline.where((el) => el.date.compareTo(thisMonthDay) == 1).length;
     List<Timeline> shopTimelineWithImg = [];
-    if (shopTimeline != null) {
-      for (Timeline timeline in shopTimeline!) {
-        if (timeline.images.isNotEmpty) {
-          shopTimelineWithImg.add(timeline);
-        }
+    for (Timeline timeline in shopTimeline) {
+      if (timeline.images.isNotEmpty) {
+        shopTimelineWithImg.add(timeline);
       }
     }
 
@@ -112,13 +129,14 @@ class CharacterPageState extends State<CharacterPage> {
                   ],
                 ),
                 SizedBox(height: 2),
-                LinearProgressIndicator(
-                  value: 2320 / 2500,
-                  color: AppColors.primaryColor,
-                  backgroundColor: AppColors.greyColor,
-                  minHeight: 14,
-                  borderRadius: BorderRadius.all(Radius.circular(100)),
-                )
+                ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    child: LinearProgressIndicator(
+                      value: 2320 / 2500,
+                      color: AppColors.primaryColor,
+                      backgroundColor: AppColors.greyColor,
+                      minHeight: 14,
+                    ))
               ],
             ),
             Image.asset(
@@ -138,7 +156,7 @@ class CharacterPageState extends State<CharacterPage> {
                       color: AppColors.primaryColor,
                     ),
                     child: const Text(
-                      "行ったお店の数",
+                      "新規店舗の数",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -147,18 +165,18 @@ class CharacterPageState extends State<CharacterPage> {
                       ),
                     ),
                   ),
-                  const Column(
+                  Column(
                     children: [
                       Text(
-                        "150",
-                        style: TextStyle(
+                        allNewShopSize.toString(),
+                        style: const TextStyle(
                           fontFamily: "Nunito",
                           fontSize: 36,
                         ),
                       ),
                       Text(
-                        "(今月 +20)",
-                        style: TextStyle(fontSize: 16),
+                        "(今月 +$thisMonthNewShopSize)",
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   )
@@ -188,18 +206,18 @@ class CharacterPageState extends State<CharacterPage> {
                       ),
                     ),
                   ),
-                  const Column(
+                  Column(
                     children: [
                       Text(
-                        "300",
-                        style: TextStyle(
+                        allTimelineSize.toString(),
+                        style: const TextStyle(
                           fontFamily: "Nunito",
                           fontSize: 36,
                         ),
                       ),
                       Text(
-                        "(今月 +50)",
-                        style: TextStyle(fontSize: 16),
+                        "(今月 +$thisMonthTimelineSize)",
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   )
@@ -255,7 +273,7 @@ class CharacterPageState extends State<CharacterPage> {
                                   context,
                                   CupertinoPageRoute(
                                     builder: (context) => PostDetailPage(
-                                      timeline: shopTimeline![index],
+                                      timeline: shopTimeline[index],
                                       imageData: snapshot.data,
                                       shop: shop,
                                     ),
@@ -264,7 +282,7 @@ class CharacterPageState extends State<CharacterPage> {
                                       if (value == "delete")
                                         {
                                           setState(() {
-                                            shopTimeline!.remove(
+                                            shopTimeline.remove(
                                                 shopTimelineWithImg[index]);
                                           })
                                         }
