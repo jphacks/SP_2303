@@ -22,7 +22,7 @@ def search_anonymous_post_for_swipe(
     y1 = func.radians(GoogleMapShop.latitude)
     x2 = func.radians(q.longitude)
     y2 = func.radians(q.latitude)
-    dx = func.radians(func.abs(x1 - x2))
+    dx = func.abs(x1 - x2)
     dist = earthRadius * func.acos(
         func.sin(y1) * func.sin(y2) + func.cos(y1) * func.cos(y2) * func.cos(dx)
     )

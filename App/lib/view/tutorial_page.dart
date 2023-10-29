@@ -25,7 +25,6 @@ class _TutorialPageState extends State<TutorialPage> with TickerProviderStateMix
         pages: pages,
         showBullets: true,
         inactiveBulletColor: Colors.grey,
-        // backgroundProvider: NetworkImage('https://picsum.photos/720/1280'),
         skipCallback: () {
           Navigator.of(context).pop();
         },

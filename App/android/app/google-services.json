@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1083179477798",
+    "project_id": "gohan-map-e09bd",
+    "storage_bucket": "gohan-map-e09bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083179477798:android:65e9c6afba06c4db32afe7",
+        "android_client_info": {
+          "package_name": "com.example.gohan_map"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1083179477798-qo9bqsubmickao3ckh6fhpmeejbcrdov.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKNy-zUTZn9k7MVU2adG2n6TtJp8435fQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1083179477798-qo9bqsubmickao3ckh6fhpmeejbcrdov.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1083179477798-md5nf0iier4ug1nd93hr435e736214nb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gohanMap"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

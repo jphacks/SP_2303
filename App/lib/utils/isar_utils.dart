@@ -57,6 +57,11 @@ class IsarUtils {
   // shopの作成
   static Future<Id> createShop(Shop shop) async {
     await ensureInitialized();
+    //すでに存在する場合は無視
+    // var beforeShop = await getShopByGooglePlaceId(shop.googlePlaceId);
+    // if (beforeShop != null) {
+    //   return beforeShop.id;
+    // }
     await isar!.writeTxn(() async {
       await isar!.shops.put(shop);
     });
@@ -118,6 +123,8 @@ class IsarUtils {
     await isar!.writeTxn(() async {
       await isar!.timelines.put(timeline);
     });
+    //idを取得
+    return;
   }
 
   // timelineの削除

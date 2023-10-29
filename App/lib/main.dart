@@ -1,48 +1,59 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/bottom_navigation.dart';
-import 'package:gohan_map/colors/app_colors.dart';
+
+import 'package:gohan_map/firebase_options.dart';
 import 'package:gohan_map/tab_navigator.dart';
+import 'package:gohan_map/utils/auth_state.dart';
 import 'package:gohan_map/utils/logger.dart';
 import 'package:gohan_map/utils/safearea_utils.dart';
 import 'package:gohan_map/view/all_post_page.dart';
 import 'package:gohan_map/view/character_page.dart';
+import 'package:gohan_map/view/login_page.dart';
 import 'package:gohan_map/view/map_page.dart';
 import 'package:gohan_map/view/swipeui_page.dart';
+import 'package:gohan_map/view/swipeui_pre_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// アプリが起動したときに呼ばれる
-void main() {
+void main() async {
   logger.i("start application!");
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.white,
   ));
+
   // スプラッシュ画面をロードが終わるまで表示する
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  runApp(const MyApp());
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 ///アプリケーションの最上位のウィジェット
 ///ウィジェットとは、画面に表示される要素のこと。
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //セーフエリア外の高さを保存しておく
     SafeAreaUtil.unSafeAreaBottomHeight = MediaQuery.of(context).padding.bottom;
     SafeAreaUtil.unSafeAreaTopHeight = MediaQuery.of(context).padding.top;
+    //ログイン済みか
+    final isSignedIn = ref.watch(isSignedInProvider);
     return MaterialApp(
-      title: 'Gohan Map',
+      title: 'Umap',
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(
+      home: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: MainPage(),
+        body: (isSignedIn) ? const MainPage() : const LoginPage(),
       ),
       theme: ThemeData(
         fontFamily: (Platform.isAndroid) ? "SanFrancisco" : null,
@@ -56,6 +67,7 @@ enum TabItem {
   map,
   swipe,
   character,
+  setting,
 }
 
 //タブバー(BottomNavigationBar)を含んだ全体の画面
@@ -71,6 +83,7 @@ class _MainPageState extends State<MainPage> {
     TabItem.map: GlobalKey<NavigatorState>(),
     TabItem.swipe: GlobalKey<NavigatorState>(),
     TabItem.character: GlobalKey<NavigatorState>(),
+    TabItem.setting: GlobalKey<NavigatorState>(),
   };
 
   //globalKeyは、ウィジェットの状態を保存するためのもの
@@ -78,6 +91,7 @@ class _MainPageState extends State<MainPage> {
     TabItem.map: GlobalKey<State>(),
     TabItem.swipe: GlobalKey<State>(),
     TabItem.character: GlobalKey<State>(),
+    TabItem.setting: GlobalKey<State>(),
   };
 
   final allpostKey = GlobalKey<AllPostPageState>();
@@ -98,6 +112,10 @@ class _MainPageState extends State<MainPage> {
           _buildTabItem(
             TabItem.character,
             '/character',
+          ),
+          _buildTabItem(
+            TabItem.setting,
+            '/setting',
           ),
         ],
       ),
@@ -126,15 +144,16 @@ class _MainPageState extends State<MainPage> {
 
   //タブが選択されたときに呼ばれる。tabItemは選択されたタブ
   void onSelect(TabItem tabItem) {
-    setState(() {
-      _currentTab = tabItem;
-    });
     //選択されたタブをリロードする
     if (tabItem == TabItem.swipe) {
-      SwipeUIPageState? allpostPageState =
-          _globalKeys[tabItem]!.currentState as SwipeUIPageState?;
+      SwipeUIPrePageState? allpostPageState =
+          _globalKeys[tabItem]!.currentState as SwipeUIPrePageState?;
       allpostPageState?.reload();
-      _navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
+      if (_currentTab == tabItem) {
+        _navigatorKeys[tabItem]
+            ?.currentState
+            ?.popUntil((route) => route.isFirst);
+      }
     } else if (tabItem == TabItem.map) {
       MapPageState? mapPageState =
           _globalKeys[tabItem]!.currentState as MapPageState?;
@@ -152,5 +171,8 @@ class _MainPageState extends State<MainPage> {
     _navigatorKeys[TabItem.character]
         ?.currentState
         ?.popUntil((route) => route.isFirst);
+    setState(() {
+      _currentTab = tabItem;
+    });
   }
 }

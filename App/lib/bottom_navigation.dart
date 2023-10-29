@@ -7,11 +7,13 @@ const tabTitle = <TabItem, String>{
   TabItem.map: 'マップ',
   TabItem.swipe: 'スワイプ',
   TabItem.character: 'キャラクター',
+  TabItem.setting: '設定',
 };
 const tabIcon = <TabItem, IconData>{
   TabItem.map: AppIcons.map_marked_alt,
   TabItem.swipe: Icons.thumbs_up_down,
   TabItem.character: AppIcons.paw,
+  TabItem.setting: Icons.settings,
 };
 
 class BottomNavigation extends StatelessWidget {
@@ -48,6 +50,10 @@ class BottomNavigation extends StatelessWidget {
             context,
             tabItem: TabItem.character,
           ),
+          bottomItem(
+            context,
+            tabItem: TabItem.setting,
+          ),
         ],
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 12,
@@ -62,12 +68,13 @@ class BottomNavigation extends StatelessWidget {
     BuildContext context, {
     required TabItem tabItem,
   }) {
-    final color = currentTab == tabItem ? AppColors.tabBarColor : Colors.black26;
+    final color =
+        currentTab == tabItem ? AppColors.tabBarColor : Colors.black26;
     return BottomNavigationBarItem(
-      icon: Column( 
+      icon: Column(
         children: [
           const SizedBox(
-          height: 8,
+            height: 8,
           ),
           Icon(
             tabIcon[tabItem],
