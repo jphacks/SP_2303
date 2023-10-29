@@ -20,9 +20,7 @@ Future getAndShowExpDialog({
             children: [
               SizedBox(
                 height: 100,
-                child: Image.network(
-                  "https://www.webtech.co.jp/help/wp-content/uploads/2015/10/comipo24bit.png",
-                ),
+                child: Image.asset("images/eat.png"),
               ),
               Text("経験値を$exp獲得しました"),
             ],
