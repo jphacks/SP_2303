@@ -1,6 +1,14 @@
 # Umap
 <img width="746" alt="image" src="https://github.com/jphacks/SP_2303/assets/81278726/85c804bf-4fb7-4d0e-8d46-4f0253084cd9">
 
+## APKファイル配布
+Androidで実行可能なAPKファイルを配布しています。
+以下のリンクからダウンロードしてください。
+
+ダウンロード期日：11/3 23:59まで
+推奨動作環境：Android 7.0以上
+https://62.gigafile.nu/1103-ce21b31a0add1f66dc6eb9c0c59baf4d5
+
 
 
 
