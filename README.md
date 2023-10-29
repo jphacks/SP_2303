@@ -40,6 +40,8 @@ Swipe UIの実現のためには画像の投稿をしてもらうことが必須
 * 3DCGキャラクターのアニメ調の見た目の再現
 
 ## 開発技術
+<img width="642" alt="image" src="https://github.com/jphacks/SP_2303/assets/81278726/7b518900-f114-4d66-8d3b-06e7e97d2611">
+
 ### 活用した技術
 - Flutter
 - Python
