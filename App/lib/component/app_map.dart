@@ -292,22 +292,14 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
                         mapController: widget.mapController!,
                       );
                     },
-                  ).then((value) {
-                    //MapTileの読み込み
-                    SharedPreferences.getInstance().then((pref) {
-                      setState(() {
-                        currentTileURL = pref.getString("currentTileURL") ??
-                            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
-                      });
-                    });
-                  });
+                  );
                 },
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.format_list_bulleted,
-                      color: AppColors.greyDarkColor,
+                      color: AppColors.primaryColor,
                     ),
                     SizedBox(width: 8),
                     Text(

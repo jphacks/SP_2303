@@ -16,6 +16,8 @@ import 'package:gohan_map/view/character_page.dart';
 import 'package:gohan_map/view/login_page.dart';
 import 'package:gohan_map/view/map_page.dart';
 import 'package:gohan_map/view/swipeui_page.dart';
+import 'package:gohan_map/view/swipeui_pre_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// アプリが起動したときに呼ばれる
 void main() async {
@@ -47,7 +49,7 @@ class MyApp extends ConsumerWidget {
     //ログイン済みか
     final isSignedIn = ref.watch(isSignedInProvider);
     return MaterialApp(
-      title: 'Gohan Map',
+      title: 'Umap',
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -135,15 +137,16 @@ class _MainPageState extends State<MainPage> {
 
   //タブが選択されたときに呼ばれる。tabItemは選択されたタブ
   void onSelect(TabItem tabItem) {
-    setState(() {
-      _currentTab = tabItem;
-    });
     //選択されたタブをリロードする
     if (tabItem == TabItem.swipe) {
-      SwipeUIPageState? allpostPageState =
-          _globalKeys[tabItem]!.currentState as SwipeUIPageState?;
+      SwipeUIPrePageState? allpostPageState =
+          _globalKeys[tabItem]!.currentState as SwipeUIPrePageState?;
       allpostPageState?.reload();
-      _navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
+      if (_currentTab == tabItem) {
+        _navigatorKeys[tabItem]
+            ?.currentState
+            ?.popUntil((route) => route.isFirst);
+      }
     } else if (tabItem == TabItem.map) {
       MapPageState? mapPageState =
           _globalKeys[tabItem]!.currentState as MapPageState?;
@@ -161,5 +164,8 @@ class _MainPageState extends State<MainPage> {
     _navigatorKeys[TabItem.character]
         ?.currentState
         ?.popUntil((route) => route.isFirst);
+    setState(() {
+      _currentTab = tabItem;
+    });
   }
 }

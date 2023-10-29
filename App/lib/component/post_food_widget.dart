@@ -25,6 +25,7 @@ class PostFoodWidget extends StatelessWidget {
     this.initialComment,
     required this.onCommentChanged,
     this.onCommentFocusChanged,
+    this.enablePublic = false,
     required this.onPublicChanged,
     this.initialPublic,
   }) : super(key: key);
@@ -43,6 +44,7 @@ class PostFoodWidget extends StatelessWidget {
 
   final Function(bool)? onCommentFocusChanged;
 
+  final bool enablePublic;
   final Function(bool) onPublicChanged;
   final bool? initialPublic;
 
@@ -75,11 +77,14 @@ class PostFoodWidget extends StatelessWidget {
           onChanged: onCommentChanged,
           onFocusChanged: onCommentFocusChanged,
         ),
-        const SizedBox(height: 16),
-        _PublicSection(
-          isPublic: initialPublic ?? false,
-          onChanged: onPublicChanged,
-        ),
+        if (enablePublic) ...[
+          const SizedBox(height: 16),
+          _PublicSection(
+            isPublic: initialPublic ?? false,
+            onChanged: onPublicChanged,
+          ),
+
+        ],
       ],
     );
   }
@@ -213,8 +218,8 @@ class _ImgSection extends StatelessWidget {
 
   Future takePhoto() async {
     try {
-      final image = await ImagePicker()
-          .pickImage(source: ImageSource.camera, maxWidth: 1200);
+      final image = await ImagePicker().pickImage(
+          source: ImageSource.camera, maxWidth: 1200, maxHeight: 1200);
       // 画像がnullの場合戻る
       if (image == null) return;
 
@@ -228,8 +233,8 @@ class _ImgSection extends StatelessWidget {
   // 画像をギャラリーから選ぶ関数
   Future pickImage() async {
     try {
-      final image = await ImagePicker()
-          .pickImage(source: ImageSource.gallery, maxWidth: 1200);
+      final image = await ImagePicker().pickImage(
+          source: ImageSource.gallery, maxWidth: 1200, maxHeight: 1200);
 
       // 画像がnullの場合戻る
       if (image == null) return;
