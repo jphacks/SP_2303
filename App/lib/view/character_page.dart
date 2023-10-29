@@ -112,6 +112,16 @@ class CharacterPageState extends State<CharacterPage> {
                         )
                       ],
                     ),
+                    const Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("うまぽよ",
+                            style: TextStyle(
+                                fontFamily: "Nunito",
+                                fontSize: 25,
+                                fontWeight: FontWeight.w600))
+                      ],
+                    ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
