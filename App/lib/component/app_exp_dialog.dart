@@ -46,3 +46,18 @@ Future<int> getExp() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getInt("exp") ?? 0;
 }
+
+class Level {
+  late int exp;
+  late int level;
+  late int expOfCurLevel;
+  late int needExpNextLevel;
+  int diff = 600;
+
+  Level(int exp) {
+    this.exp = exp;
+    level = (exp / diff).floor();
+    expOfCurLevel = exp % diff;
+    needExpNextLevel = diff;
+  }
+}

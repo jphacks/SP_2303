@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/collections/timeline.dart';
 import 'package:gohan_map/colors/app_colors.dart';
+import 'package:gohan_map/component/app_exp_dialog.dart';
 import 'package:gohan_map/utils/common.dart';
 import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/view/post_detail_page.dart';
@@ -20,6 +21,7 @@ class CharacterPage extends StatefulWidget {
 class CharacterPageState extends State<CharacterPage> {
   List<Timeline> shopTimeline = [];
   List<Shop> shops = [];
+  int exp = 0;
 
   @override
   void initState() {
@@ -27,9 +29,11 @@ class CharacterPageState extends State<CharacterPage> {
     () async {
       final allShops = await IsarUtils.getAllShops();
       final timelines = await IsarUtils.getAllTimelines();
+      final exp = await getExp();
       setState(() {
         shopTimeline = timelines;
         shops = allShops;
+        this.exp = exp;
       });
     }();
   }
@@ -38,9 +42,11 @@ class CharacterPageState extends State<CharacterPage> {
     () async {
       final allShops = await IsarUtils.getAllShops();
       final timelines = await IsarUtils.getAllTimelines();
+      final exp = await getExp();
       setState(() {
         shopTimeline = timelines;
         shops = allShops;
+        this.exp = exp;
       });
     }();
   }
@@ -49,6 +55,12 @@ class CharacterPageState extends State<CharacterPage> {
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
     DateTime thisMonthDay = DateTime(now.year, now.month, 1);
+
+    // レベル情報
+    var levelObj = Level(exp);
+    int level = levelObj.level;
+    int expOfCurLevel = levelObj.expOfCurLevel;
+    int needExpForNextLevel = levelObj.needExpNextLevel;
 
     int allNewShopSize = shops.where((el) => el.wantToGoFlg == false).length;
     int allTimelineSize = shopTimeline.length;
@@ -60,6 +72,8 @@ class CharacterPageState extends State<CharacterPage> {
         .length;
     int thisMonthTimelineSize =
         shopTimeline.where((el) => el.date.compareTo(thisMonthDay) == 1).length;
+
+    // 食べたもの記録に表示するタイムラインを作成
     List<Timeline> shopTimelineWithImg = [];
     for (Timeline timeline in shopTimeline) {
       if (timeline.images.isNotEmpty) {
@@ -73,7 +87,7 @@ class CharacterPageState extends State<CharacterPage> {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            const Column(
+            Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,16 +96,16 @@ class CharacterPageState extends State<CharacterPage> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "レベル",
                           style: TextStyle(
                               color: AppColors.primaryColor,
                               fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Text(
-                          "21",
-                          style: TextStyle(
+                          "$level",
+                          style: const TextStyle(
                             fontFamily: "Nunito",
                             fontSize: 30,
                           ),
@@ -102,24 +116,24 @@ class CharacterPageState extends State<CharacterPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          "2320",
-                          style: TextStyle(
+                          "$expOfCurLevel",
+                          style: const TextStyle(
                             fontFamily: "Nunito",
                             fontSize: 20,
                           ),
                         ),
-                        SizedBox(width: 4),
-                        Text(
+                        const SizedBox(width: 4),
+                        const Text(
                           "/",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(width: 3),
+                        const SizedBox(width: 3),
                         Text(
-                          "2500",
-                          style: TextStyle(
+                          "$needExpForNextLevel",
+                          style: const TextStyle(
                             fontFamily: "Nunito",
                             fontSize: 16,
                           ),
@@ -128,11 +142,11 @@ class CharacterPageState extends State<CharacterPage> {
                     )
                   ],
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    borderRadius: const BorderRadius.all(Radius.circular(100)),
                     child: LinearProgressIndicator(
-                      value: 2320 / 2500,
+                      value: expOfCurLevel / needExpForNextLevel,
                       color: AppColors.primaryColor,
                       backgroundColor: AppColors.greyColor,
                       minHeight: 14,
