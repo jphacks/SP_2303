@@ -24,6 +24,15 @@
 #### 3. キャラクター育成機能
 Swipe UIの実現のためには画像の投稿をしてもらうことが必須になることから、その操作を実行してもらえるように他にモチベーションを用意する必要があり、育成機能を実装しました。キャラクターの画像には3DCGと特殊なテクスチャを用いており、アニメ調の見た目でありながら柔らかさを表現しています。
 
+<p align="center">
+<div style="display:flex">
+  <img style="flex-grow:1" src="https://github.com/jphacks/SP_2303/assets/81278726/ea0954dd-4a6a-43c3-846e-d13cef94e300" width="30%">
+  <img style="flex-grow:1" src="https://github.com/jphacks/SP_2303/assets/81278726/95c5bae0-3279-4157-9bad-22976b46561f" width="30%">
+  <img style="flex-grow:1" src="https://github.com/jphacks/SP_2303/assets/81278726/b8849999-623c-4b1c-81de-1f9b389f51d4" width="30%">
+</div>
+</p>
+
+
 ### 解決出来ること
 外食では、``「お店を探す」→「食べる」→「記録・共有する」→「振り返る」``という手順を踏んでいます。上記の機能を用いることで、このサイクルの中でも特に「お店を探す」「記録・共有する」「振り返る」をより楽しく便利にすることができます。
 
