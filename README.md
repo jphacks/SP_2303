@@ -70,7 +70,6 @@ Swipe UIの実現には多くのユーザーにたくさんの記録を公開し
 
 
 
-![](https://hackmd.io/_uploads/rkWbDwjMa.png)
 
 ### 今後の展望
 - 「美味しかった！」を他人と共有する機能追加
