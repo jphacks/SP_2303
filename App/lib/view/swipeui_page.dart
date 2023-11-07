@@ -281,7 +281,7 @@ class SwipeUIPageState extends State<SwipeUIPage> {
     if (direction == AppinioSwiperDirection.right) {
       goodCandidates.add(candidates[index - 1]);
     }
-    log("the card was swiped to the: " + direction.name);
+    log("the card was swiped to the: ${direction.name}");
   }
 
   void _onEnd() {
@@ -369,7 +369,7 @@ class AnonymousPostCard extends StatelessWidget {
                   top: Radius.circular(10),
                 ),
                 image: DecorationImage(
-                  image: candidate.img!.image,
+                  image: candidate.img.image,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -395,7 +395,7 @@ class AnonymousPostCard extends StatelessWidget {
                     IgnorePointer(
                       ignoring: true,
                       child: AppRatingBar(
-                        initialRating: 4,
+                        initialRating: candidate.star,
                         onRatingUpdate: (rating) {},
                         itemSize: 20,
                       ),
