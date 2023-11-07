@@ -297,7 +297,7 @@ class CharacterPageState extends State<CharacterPage> {
                                   context,
                                   CupertinoPageRoute(
                                     builder: (context) => PostDetailPage(
-                                      timeline: shopTimeline[index],
+                                      timeline: shopTimelineWithImg[index],
                                       imageData: snapshot.data,
                                       shop: shop,
                                     ),
