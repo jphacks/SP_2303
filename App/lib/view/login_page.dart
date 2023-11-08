@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -72,7 +73,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 36),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -98,9 +99,33 @@ class LoginPage extends StatelessWidget {
                         "アプリを使用するにはGoogleアカウントでログインする必要があります",
                       ),
                       const SizedBox(height: 16),
+                      //iOSのみ
+                      if (Platform.isIOS)
+                        SignInButton(
+                          Buttons.apple,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          onPressed: () {
+                            final service = AuthService();
+                            service.signInWithApple().then((value) => {
+                                  if (value != null)
+                                    {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MainPage(),
+                                        ),
+                                      ),
+                                    },
+                                });
+                          },
+                        ),
                       SignInButton(
                         Buttons.google,
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -118,7 +143,8 @@ class LoginPage extends StatelessWidget {
                                   },
                               });
                         },
-                      )
+                      ),
+                      
                     ],
                   ),
                 ),
