@@ -51,4 +51,16 @@ class AuthService {
     }
     return 0;
   }
+
+  //アカウント削除
+  Future<int> deleteAccount() async {
+    try {
+      await FirebaseAuth.instance.currentUser?.delete();
+    } catch (e) {
+      print("アカウント削除に失敗しました: $e");
+      return 1;
+      // ここに失敗時の追加処理を書く（例: ユーザーに通知する、ログを記録するなど）
+    }
+    return 0;
+  }
 }

@@ -207,4 +207,24 @@ class APIService {
     }
     return "";
   }
+
+  //アカウント削除API
+  static Future<String> requestDeleteUserAPI(String? token) async {
+    const String apiUrl = 'https://gohanmap.almikan.com/api/user/withdraw';
+    try {
+      var response = await client.delete(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode != 204) {
+        throw json.decode(response.body)["detail"];
+      }
+    } catch (e) {
+      logger.e(e);
+      return (e.toString());
+    }
+    return "";
+  }
 }
