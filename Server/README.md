@@ -41,7 +41,7 @@ docker compose -f docker-compose.prod.yml run --rm app poetry run alembic upgrad
 docker に入る必要があります。
 
 ```bash
-docker compose -f docker-compose.local.yml exec app bash
+docker compose -f docker-compose.yml exec app bash
 ```
 
 ```bash
