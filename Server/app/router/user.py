@@ -22,6 +22,10 @@ async def get_user(
     logger.debug("request: GET /api/user/me")
     uid = cred["uid"]
     userModel = user_crud.get_user(db, uid)
+    if userModel is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found"
+        )
     userSchema = User.from_model(userModel)
     return userSchema
 
@@ -74,7 +78,6 @@ async def delete_anonymous_post_and_image(
 ) -> None:
     logger.debug("request: DELETE /api/user/withdraw")
     uid = cred["uid"]
-
 
     user_crud.delete_anonymous_post_image_by_uid(
         db,

@@ -16,12 +16,8 @@ logger = get_logger()
 
 
 # ユーザー情報を取得
-def get_user(db: Session, uid: str) -> User:
+def get_user(db: Session, uid: str) -> User | None:
     user = db.query(User).filter(User.userId == uid).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found"
-        )
     return user
 
 
