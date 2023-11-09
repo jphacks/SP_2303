@@ -25,7 +25,8 @@ isort = "^5.12.0"
 
 [tool.poe.tasks]
 serve = "uvicorn main:app --reload"
-format = "isort . && black ."
+format = "bash -c 'isort . && black .'"
+format-check = "bash -c 'isort --check . && black --check .'"
 type = "mypy app/"
 
 [tool.isort]
