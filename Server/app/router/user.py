@@ -19,14 +19,6 @@ async def delete_anonymous_post_and_image(
 ) -> None:
     logger.debug("request: DELETE /api/user/withdraw")
     uid = cred["uid"]
-    post = user.fetch_anonymous_post_by_uid(
-        db,
-        uid,
-    )
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
-        )
 
     user.delete_anonymous_post_image_by_uid(
         db,

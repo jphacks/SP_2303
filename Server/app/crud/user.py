@@ -20,10 +20,6 @@ def fetch_anonymous_post_by_uid(db: Session, uid: str) -> list[AnonymousPost]:
 
 def delete_anonymous_post_by_uid(db: Session, uid: str) -> None:
     post = db.query(AnonymousPost).filter(AnonymousPost.userId == uid).first()
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
-        )
 
     db.query(AnonymousPost).filter(AnonymousPost.userId == uid).delete()
     db.commit()
@@ -32,10 +28,7 @@ def delete_anonymous_post_by_uid(db: Session, uid: str) -> None:
 def delete_anonymous_post_image_by_uid(db: Session, uid: str) -> None:
     # 該当の投稿を取得
     posts = db.query(AnonymousPost).filter(AnonymousPost.userId == uid).all()
-    if posts is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Post not found"
-        )
+
     # ディレクトリが存在しない場合、作成する
     if not os.path.exists(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH):
         os.makedirs(SYSTEM_MEDIA_IMAGE_ANONYMOUS_POST_PATH)
