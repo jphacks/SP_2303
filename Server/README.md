@@ -24,7 +24,7 @@ DB が起動した状態で以下のコマンドを実行する
 
 ```bash
 docker compose run --rm app poetry run alembic upgrade head
-```
+
 
 ### 本番環境
 
