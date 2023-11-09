@@ -38,7 +38,7 @@ async def create_user(
         db,
         uid,
         body.name,
-        body.icon_kind,
+        body.iconKind,
     )
 
 
@@ -51,7 +51,7 @@ async def update_user(
 ) -> None:
     logger.debug("request: PUT /api/user")
     uid = cred["uid"]
-    return user_crud.update_user(db, uid, body.name, body.icon_kind)
+    return user_crud.update_user(db, uid, body.name, body.iconKind)
 
 
 # ユーザーを削除

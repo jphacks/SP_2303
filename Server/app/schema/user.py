@@ -9,7 +9,7 @@ from app.models.user import User as UserModel
 
 class UserCreate(BaseModel):
     name: str
-    icon_kind: int
+    iconKind: int
 
 
 Self = TypeVar("Self", bound="User")
@@ -18,7 +18,7 @@ Self = TypeVar("Self", bound="User")
 class User(BaseModel):
     userId: str
     name: str
-    icon_kind: int
+    iconKind: int
     createdAt: datetime
     updatedAt: datetime
 
@@ -27,7 +27,7 @@ class User(BaseModel):
         return cls(
             userId=model.userId,
             name=model.name,
-            icon_kind=model.icon_kind,
+            iconKind=model.iconKind,
             createdAt=model.createdAt,
             updatedAt=model.updatedAt,
         )

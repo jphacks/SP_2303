@@ -30,18 +30,18 @@ def create_user(
     db: Session,
     uid: str,
     name: str,
-    icon_kind: int,
+    iconKind: int,
 ) -> None:
-    db_user = User(userId=uid, name=name, icon_kind=icon_kind)
+    db_user = User(userId=uid, name=name, iconKind=iconKind)
     db.add(db_user)
     db.commit()
 
 
-def update_user(db: Session, uid: str, name: str, icon_kind: int) -> None:
+def update_user(db: Session, uid: str, name: str, iconKind: int) -> None:
     db.query(User).filter(User.userId == uid).update(
         {
             User.name: name,
-            User.icon_kind: icon_kind,
+            User.iconKind: iconKind,
             User.updatedAt: datetime.now(),
         }
     )

@@ -20,7 +20,7 @@ class User(Base):
 
     userId: str = Column("user_id", String(200), primary_key=True, nullable=False)
     name: str = Column("name", String(200), nullable=False)
-    icon_kind: int = Column(
+    iconKind: int = Column(
         "icon_kind",
         Integer(),
         nullable=False,
