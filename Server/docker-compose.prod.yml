@@ -21,6 +21,8 @@ services:
       context: .
     env_file:
       - .env
+    volumes:
+      - media:/src/app/media
     depends_on:
       - db
   db:
@@ -36,3 +38,4 @@ services:
 volumes:
   db_store:
   https-portal-data:
+  media:
