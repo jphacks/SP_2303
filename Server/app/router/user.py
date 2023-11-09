@@ -21,8 +21,9 @@ async def get_user(
 ) -> User:
     logger.debug("request: GET /api/user/me")
     uid = cred["uid"]
-    user = user_crud.get_user(db, uid)
-    return user
+    userModel = user_crud.get_user(db, uid)
+    userSchema = User.from_model(userModel)
+    return userSchema
 
 
 # ユーザー作成
@@ -34,6 +35,12 @@ async def create_user(
 ) -> None:
     logger.debug("request: POST /api/user")
     uid = cred["uid"]
+    # すでにユーザーが存在する場合はエラー
+    user = user_crud.get_user(db, uid)
+    if user is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=f"User already exists"
+        )
     return user_crud.create_user(
         db,
         uid,
@@ -51,21 +58,13 @@ async def update_user(
 ) -> None:
     logger.debug("request: PUT /api/user")
     uid = cred["uid"]
+    # ユーザーが存在しない場合はエラー
+    user = user_crud.get_user(db, uid)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found"
+        )
     return user_crud.update_user(db, uid, body.name, body.iconKind)
-
-
-# ユーザーを削除
-@router.delete("/api/user", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(
-    db: Session = Depends(get_db),
-    cred: UserInfo = Depends(get_current_user),
-) -> None:
-    logger.debug("request: DELETE /api/user")
-    uid = cred["uid"]
-    user_crud.delete_user(
-        db,
-        uid,
-    )
 
 
 @router.delete("/api/user/withdraw", status_code=status.HTTP_204_NO_CONTENT)
@@ -89,6 +88,10 @@ async def delete_anonymous_post_and_image(
         uid,
     )
     user_crud.delete_anonymous_post_by_uid(
+        db,
+        uid,
+    )
+    user_crud.delete_user(
         db,
         uid,
     )
