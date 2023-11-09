@@ -13,9 +13,7 @@ class User(Base):
     """
 
     __tablename__ = "user"
-    __table_args__ = (
-        {"comment": "ユーザー設定に関するテーブル"},
-    )
+    __table_args__ = ({"comment": "ユーザー設定に関するテーブル"},)
 
     userId: str = Column("user_id", String(200), primary_key=True, nullable=False)
     name: str = Column("name", String(200), nullable=False)
