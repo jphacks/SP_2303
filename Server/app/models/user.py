@@ -14,7 +14,6 @@ class User(Base):
 
     __tablename__ = "user"
     __table_args__ = (
-        UniqueConstraint("user_id"),
         {"comment": "ユーザー設定に関するテーブル"},
     )
 
