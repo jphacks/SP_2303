@@ -147,7 +147,6 @@ def fetch_anonymous_post_by_uid_timelineId(
         .filter(AnonymousPost.userId == uid, AnonymousPost.timelineId == timelineId)
         .first()
     )
-    print("post", post)
     return post
 
 
