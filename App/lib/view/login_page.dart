@@ -102,7 +102,7 @@ class LoginPage extends StatelessWidget {
                       //iOSのみ
                       if (Platform.isIOS)
                         SignInButton(
-                          Buttons.apple,
+                          Buttons.appleDark,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
