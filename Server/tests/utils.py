@@ -1,4 +1,11 @@
-from app.types.client_response import AnonymousPost, AnonymousPostImage
+import os
+
+from app.types.client_response import (
+    AnonymousPost,
+    AnonymousPostImage,
+    GoogleMapShop,
+    SwipePost,
+)
 
 
 def equal_anonymous_post(a1: AnonymousPost, a2: AnonymousPost) -> None:
@@ -16,3 +23,24 @@ def equal_anonymous_post(a1: AnonymousPost, a2: AnonymousPost) -> None:
 def equal_anonymous_post_image(a1: AnonymousPostImage, a2: AnonymousPostImage) -> None:
     assert a1["id"] == a2["id"]
     assert a1["anonymousPostId"] == a2["anonymousPostId"]
+
+
+def equal_google_map_shop(a1: GoogleMapShop, a2: GoogleMapShop) -> None:
+    assert a1["name"] == a2["name"]
+    assert a1["address"] == a2["address"]
+    assert a1["googleMapShopId"] == a2["googleMapShopId"]
+    assert a1["latitude"] == a2["latitude"]
+    assert a1["longitude"] == a2["longitude"]
+
+
+def equal_swipe_post(a1: SwipePost, a2: SwipePost) -> None:
+    assert a1["star"] == a2["star"]
+    equal_google_map_shop(a1["googleMapShop"], a2["googleMapShop"])
+
+
+def exist_media_image(imagePath: str) -> None:
+    # imagePathがルート始まりの場合、joinが上手くできないので一度分解して結合する
+    pathList = ["tests"]
+    pathList.extend(imagePath.split("/"))
+    imageSystemPath = os.path.join(*pathList)
+    assert os.path.exists(imageSystemPath) == True

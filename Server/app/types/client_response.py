@@ -18,3 +18,17 @@ class AnonymousPost(TypedDict):
     imageList: list[AnonymousPostImage]
     createdAt: str
     updatedAt: str
+
+
+class GoogleMapShop(TypedDict):
+    googleMapShopId: str
+    latitude: float
+    longitude: float
+    name: str
+    address: str
+
+
+class SwipePost(TypedDict):
+    imageURL: str
+    star: float
+    googleMapShop: GoogleMapShop
