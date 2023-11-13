@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gohan_map/utils/logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -39,7 +40,7 @@ class PlaceApiRestaurantResult {
 
 Future<List<PlaceApiRestaurantResult>> searchRestaurantsByGoogleMapApi(
     String keyword, LatLng latlng) async {
-  const String apiKey = String.fromEnvironment("GOOGLE_MAP_API_KEY");
+  final String apiKey = dotenv.get('GOOGLE_MAP_API_KEY');
   final String apiUrl =
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=$keyword&location=${latlng.latitude},${latlng.longitude}&rankby=distance&type=food&language=ja&key=$apiKey';
   List<PlaceApiRestaurantResult> result = [];

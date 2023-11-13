@@ -40,7 +40,7 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("お店トレード"),
+        title: const Text("おすすめしたい飲食店を選ぶ"),
         foregroundColor: AppColors.blackTextColor,
         backgroundColor: AppColors.whiteColor,
       ),
