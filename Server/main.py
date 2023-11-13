@@ -5,10 +5,14 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.router import anonymous_post, swipe, user
-from app.settings import FIREBASE_CONFIG, PUBLIC_MEDIA_PATH, SYSTEM_MEDIA_PATH
+from app.settings import FIREBASE_CONFIG, PUBLIC_MEDIA_PATH, SYSTEM_MEDIA_PATH, TESTING
 
 ## 初期化 ##
-firebase_admin.initialize_app(firebase_admin.credentials.Certificate(FIREBASE_CONFIG))
+if not TESTING:
+    # テスト時はfirebaseを利用しない
+    firebase_admin.initialize_app(
+        firebase_admin.credentials.Certificate(FIREBASE_CONFIG)
+    )
 
 
 app = FastAPI()
