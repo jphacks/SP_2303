@@ -49,7 +49,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
     SharedPreferences.getInstance().then((pref) {
       setState(() {
         currentTileURL = pref.getString("currentTileURL") ??
-            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
+            "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png";
       });
     });
     //アニメーションの定義
