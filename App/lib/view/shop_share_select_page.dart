@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/collections/shop.dart';
@@ -77,23 +79,65 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
     );
   }
 
+  //交換するお店を決定したら
   Future<void> onPressConfirm() async {
-    List<Shop> selectedShops = [];
+    List<ShareShop> selectedShops = [];
     for (var i = 0; i < selectedList.length; i++) {
       if (selectedList[i]) {
-        selectedShops.add(shopList[i]);
+        selectedShops.add(
+          ShareShop(
+            name: shopList[i].shopName,
+            address: shopList[i].shopAddress,
+            googlePlaceId: shopList[i].googlePlaceId,
+            latitude: shopList[i].shopLatitude,
+            longitude: shopList[i].shopLongitude,
+            star: 0,
+            imageURL: "",
+          ),
+        );
       }
     }
     final (apiRes, msg) = await APIService.requestAnonymousAPI(
         await ref.watch(userProvider)?.getIdToken());
-    print(apiRes.length);
-    print(msg);
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => ShopSharePage(),
-    //   ),
-    // );
+    if (msg != "") {
+      CupertinoAlertDialog(
+        title: const Text("エラー"),
+        content: Text(msg),
+        actions: [
+          CupertinoDialogAction(
+            child: Text(msg),
+            onPressed: () {
+              Navigator.pop(context);
+              return;
+            },
+          ),
+        ],
+      );
+    }
+    for (var shop in selectedShops) {
+      //googleIdが一致する店舗を探す
+      var result = apiRes
+          .where((element) => element.googleMapShopId == shop.googlePlaceId)
+          .toList();
+      if (result.isNotEmpty && result[0].imageList.isNotEmpty) {
+        final imgURL = result[0].imageList[0].imageURL;
+        //https://gohanmap.almikan.com/media/images/anonymous-post/を消す
+        shop.imageURL = imgURL.replaceAll(
+            "https://gohanmap.almikan.com/media/images/anonymous-post/", "");
+        shop.star = result[0].star;
+      }
+    }
+    User? user = ref.watch(userProvider);
+    //名前
+    final String name = user?.displayName ?? "匿名";
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ShopSharePage(
+          sendData: ShareQRData(name: name, shareShopList: selectedShops),
+        ),
+      ),
+    );
   }
 }
 
@@ -122,6 +166,7 @@ class _ListArea extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (filteredShops.isNotEmpty)
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Text(
@@ -129,12 +174,12 @@ class _ListArea extends StatelessWidget {
             style: TextStyle(fontSize: 14, color: AppColors.greyDarkColor),
           ),
         ),
-        if (shopList.isEmpty)
+        if (filteredShops.isEmpty)
           const Align(
             alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text("登録された店舗はありません"),
+              child: Text("行った店舗はありません"),
             ),
           ),
         for (var shop in filteredShops) ...[

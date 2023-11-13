@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_haptic/haptic.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/view/swipe_result_page.dart';
 import 'package:gohan_map/view/swipeui_page.dart';
@@ -11,7 +12,8 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ShopSharePage extends StatefulWidget {
-  const ShopSharePage({super.key});
+  const ShopSharePage({super.key, required this.sendData});
+  final ShareQRData sendData;
 
   @override
   State<ShopSharePage> createState() => _ShopSharePageState();
@@ -20,45 +22,45 @@ class ShopSharePage extends StatefulWidget {
 class _ShopSharePageState extends State<ShopSharePage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
-  ShareQRData sendData = ShareQRData(name: "toyodatoyoda", shareShopList: [
-    ShareShop(
-        name: "札幌ザンギ本舗 札幌駅北口店",
-        address: "札幌市北区北８条西４丁目13−３ 金子ビル 1F",
-        googlePlaceId: "ChIJwebc6AYpC18RG0XzoP0uacs",
-        latitude: 43.07098430000001,
-        longitude: 141.3492699,
-        star: 4,
-        imageURL: ""),
-    ShareShop(
-        name: "コメダ珈琲店 北12条東店",
-        address: "札幌市東区北１２条東４丁目２−１２",
-        googlePlaceId: "ChIJd6mJ6nApC18Red6hUNrolyY",
-        latitude: 43.0772478,
-        longitude: 141.3591183,
-        star: 5,
-        imageURL: ""),
-    ShareShop(
-        name: "山次郎",
-        address: "札幌市北区北１３条西４丁目１−５",
-        googlePlaceId: "ChIJ5QpeoA8pC18Rh_9InTIvgF8",
-        latitude: 43.0759668,
-        longitude: 141.3477653,
-        star: 5,
-        imageURL: ""),
-    ShareShop(
-        name: "山次郎",
-        address: "札幌市北区北１３条西４丁目１−５",
-        googlePlaceId: "ChIJ5QpeoA8pC18Rh_9InTIvgF8",
-        latitude: 43.0759668,
-        longitude: 141.3477653,
-        star: 5,
-        imageURL: ""),
-  ]);
+  // ShareQRData sendData = ShareQRData(name: "toyodatoyoda", shareShopList: [
+  //   ShareShop(
+  //       name: "札幌ザンギ本舗 札幌駅北口店",
+  //       address: "札幌市北区北８条西４丁目13−３ 金子ビル 1F",
+  //       googlePlaceId: "ChIJwebc6AYpC18RG0XzoP0uacs",
+  //       latitude: 43.07098430000001,
+  //       longitude: 141.3492699,
+  //       star: 4,
+  //       imageURL: ""),
+  //   ShareShop(
+  //       name: "コメダ珈琲店 北12条東店",
+  //       address: "札幌市東区北１２条東４丁目２−１２",
+  //       googlePlaceId: "ChIJd6mJ6nApC18Red6hUNrolyY",
+  //       latitude: 43.0772478,
+  //       longitude: 141.3591183,
+  //       star: 5,
+  //       imageURL: ""),
+  //   ShareShop(
+  //       name: "山次郎",
+  //       address: "札幌市北区北１３条西４丁目１−５",
+  //       googlePlaceId: "ChIJ5QpeoA8pC18Rh_9InTIvgF8",
+  //       latitude: 43.0759668,
+  //       longitude: 141.3477653,
+  //       star: 5,
+  //       imageURL: ""),
+  //   ShareShop(
+  //       name: "山次郎",
+  //       address: "札幌市北区北１３条西４丁目１−５",
+  //       googlePlaceId: "ChIJ5QpeoA8pC18Rh_9InTIvgF8",
+  //       latitude: 43.0759668,
+  //       longitude: 141.3477653,
+  //       star: 5,
+  //       imageURL: ""),
+  //]);
   ShareQRData? receiveData;
   var sendJson = "";
   @override
   void initState() {
-    sendJson = jsonEncode(sendData.toJson());
+    sendJson = jsonEncode(widget.sendData.toJson());
     super.initState();
   }
 
@@ -105,7 +107,7 @@ class _ShopSharePageState extends State<ShopSharePage> {
                   const Divider(),
                   if (receiveData == null) ...[
                     const Text(
-                      "おすすめ飲食店を交換したい相手と\nこの画面を20cmの間隔をあけて\n向かい合わせにしてください\nお互いのQRコードをインカメラを使って読み取ります",
+                      "おすすめ飲食店を交換したい相手と\n向かい合わせにしてください。\n間隔は20cm程度あけてください。\nお互いのQRコードをインカメラを使って読み取ります",
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -182,7 +184,10 @@ class _ShopSharePageState extends State<ShopSharePage> {
                 star: element.star,
                 img: (element.imageURL == "")
                     ? Image.asset("images/no_image.png")
-                    : Image.network(element.imageURL)));
+                    : Image.network(
+                        "https://gohanmap.almikan.com/media/images/anonymous-post/${element.imageURL}",
+                        fit: BoxFit.cover,
+                      ))); ////https://gohanmap.almikan.com/media/images/anonymous-post/を加える
           }
           //SwipeResultページに遷移
           Navigator.pushReplacement(context,
@@ -224,7 +229,10 @@ class _ShopSharePageState extends State<ShopSharePage> {
   //スキャンしたら
   void _onQRViewScanned(ShareQRData scanData) {
     //振動
-    HapticFeedback.heavyImpact();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      HapticFeedback.heavyImpact();
+    });
+    Haptic.onSuccess();
     setState(() {
       receiveData = scanData;
       controller?.pauseCamera();
@@ -260,8 +268,8 @@ class ShareShop {
   final String googlePlaceId;
   final double latitude;
   final double longitude;
-  final double star;
-  final String imageURL;
+  double star;
+  String imageURL;
 
   ShareShop(
       {required this.name,

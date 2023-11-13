@@ -14,7 +14,7 @@ class SettingPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     User? user = ref.watch(userProvider);
     //名前
-    final String name = user?.displayName ?? "匿名さん";
+    final String name = user?.displayName ?? "匿名";
     //プロバイダ名
     String provider = user?.providerData[0].providerId ?? "不明";
     if (provider == "google.com") {

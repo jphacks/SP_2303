@@ -113,9 +113,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 ),
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ShopShareSelectPage()));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ShopShareSelectPage()))
+                      .then((value) => reload());
                 },
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +129,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      "お店共有",
+                      "お店交換",
                       style: TextStyle(color: AppColors.greyDarkColor),
                     )
                   ],
