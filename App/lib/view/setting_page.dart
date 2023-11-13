@@ -84,10 +84,11 @@ class SettingPage extends ConsumerWidget {
             message: const Text("退会すると、投稿した画像も削除されます。"),
             actions: [
               CupertinoActionSheetAction(
-                child: const Text("退会する"),
+                isDestructiveAction: true,
                 onPressed: () {
                   Navigator.pop(context, 0);
                 },
+                child: const Text("退会する"),
               ),
             ],
             cancelButton: CupertinoActionSheetAction(
