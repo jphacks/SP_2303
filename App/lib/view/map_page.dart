@@ -19,6 +19,7 @@ import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/utils/map_pins.dart';
 import 'package:gohan_map/view/place_create_page.dart';
 import 'package:gohan_map/view/place_detail_page.dart';
+import 'package:gohan_map/view/place_list_page.dart';
 import 'package:gohan_map/view/place_post_page.dart';
 import 'package:gohan_map/view/place_search_page.dart';
 import 'package:gohan_map/view/shop_share_select_page.dart';
@@ -80,60 +81,256 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.bottomCenter,
       children: [
         AppMap(
           pins: pins,
           mapController: mapController,
         ),
-        buildShareWidget(),
-        buildDummySearchWidget(),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [buildSearchWidget(), buildShareWidget()],
+            ),
+          ),
+        ),
       ],
     );
   }
 
   //共有ボタン
   Widget buildShareWidget() {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(right: 20, bottom: 150),
-          child: SizedBox(
-            width: 120,
-            height: 60,
-            child: ElevatedButton(
-                //角丸で白
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(0),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.primaryColor,
+    return SizedBox(
+      width: 200,
+      height: 60,
+      child: ElevatedButton(
+          //角丸で白
+          style: ElevatedButton.styleFrom(
+            elevation: 8,
+            padding: const EdgeInsets.all(0),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            backgroundColor: AppColors.primaryColor,
+          ),
+          onPressed: () {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ShopShareSelectPage()))
+                .then((value) => reload());
+          },
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.group,
+                color: AppColors.whiteColor,
+                size: 30,
+              ),
+              SizedBox(width: 8),
+              Text(
+                "お店トレード",
+                style: TextStyle(
+                  color: AppColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
-                onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ShopShareSelectPage()))
-                      .then((value) => reload());
+              )
+            ],
+          )),
+    );
+  }
+
+  //共有ボタン
+  Widget buildSearchWidget() {
+    return Flexible(
+      flex: 1,
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+            //角丸で白
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(0),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              backgroundColor: AppColors.whiteColor,
+            ),
+            onPressed: () {
+              //検索バーをタップしたときの処理
+              showModalBottomSheet(
+                barrierColor: Colors.black.withOpacity(0),
+                context: context,
+                isDismissible: true,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) {
+                  return PlaceSearchPage(
+                    mapController: mapController,
+                  ); //飲食店を検索する画面
                 },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      AppIcons.share,
-                      color: AppColors.primaryColor,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      "お店交換",
-                      style: TextStyle(color: AppColors.greyDarkColor),
-                    )
-                  ],
-                )),
+              ).then(
+                (value) {
+                  //valueの型がInt→詳細画面
+                  //int型ならそのまま、Id型ならばnullにしたい
+                  int? id = (value is int) ? value : null;
+                  //valueの型がPlaceApiRestaurantResult→新規作成画面
+                  PlaceApiRestaurantResult? paResult =
+                      (value is PlaceApiRestaurantResult) ? value : null;
+
+                  //検索画面で追加済みの店を選択した場合、選択した場所の詳細画面を表示する。
+                  if (id != null) {
+                    setState(() {
+                      tapFlgs[id] = true;
+                    });
+                    showModalBottomSheet(
+                      barrierColor: Colors.black.withOpacity(0),
+                      context: context,
+                      isDismissible: true,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) {
+                        return PlaceDetailPage(
+                          id: id,
+                        ); //飲食店の詳細画面
+                      },
+                    ).then((value) => _onModalPop(value, id));
+                    //ピンの緯度経度を取得
+                    IsarUtils.getShopById(id).then((shop) {
+                      if (shop != null) {
+                        final latLng =
+                            LatLng(shop.shopLatitude, shop.shopLongitude);
+                        //ピンの位置に移動する
+                        final deviceHeight = MediaQuery.of(context).size.height;
+                        _moveToPin(latLng, (deviceHeight - 150) * 0.15);
+                      }
+                    });
+                  }
+
+                  //検索画面で新規店舗を選択した場合、新規作成画面を表示する。
+                  if (paResult != null) {
+                    setState(() {
+                      //ピンを配置する
+                      _addPinToMap(paResult.latlng, null);
+                    });
+                    //mapをスクロールする
+                    final deviceHeight = MediaQuery.of(context).size.height;
+                    _moveToPin(paResult.latlng, (deviceHeight - 150) * 0.15);
+                    showModalBottomSheet(
+                      barrierColor: Colors.black.withOpacity(0),
+                      isDismissible: true,
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) {
+                        return PlaceCreatePage(
+                          latlng: paResult.latlng,
+                          shopName: paResult.name,
+                          placeId: paResult.placeId,
+                          address: paResult.address,
+                        );
+                      },
+                    ).then((shopId) {
+                      _loadAllShop();
+                      if (shopId != null) {
+                        //ピンの位置に移動する
+                        IsarUtils.getShopById(shopId).then((shop) {
+                          if (shop != null) {
+                            final latLng =
+                                LatLng(shop.shopLatitude, shop.shopLongitude);
+                            _moveToPin(latLng, (deviceHeight - 150) * 0.15);
+                            //初回投稿
+                            showModalBottomSheet(
+                              barrierColor: Colors.black.withOpacity(0),
+                              isDismissible: true,
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) {
+                                return PlacePostPage(
+                                  shop: shop,
+                                );
+                              },
+                            );
+                          }
+                        });
+                      }
+                    });
+                  }
+                },
+              );
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(width: 20),
+                Icon(
+                  Icons.restaurant_rounded,
+                  color: AppColors.primaryColor,
+                  size: 22,
+                ),
+                SizedBox(width: 16),
+                Text(
+                  "お店の追加 / 検索",
+                  style: TextStyle(
+                    color: AppColors.blackTextColor,
+                    //fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                )
+              ],
+            )),
+      ),
+    );
+  }
+
+  Widget buildListWidget() {
+    return SizedBox(
+      height: 40,
+      width: double.infinity,
+      child: ElevatedButton(
+        //角丸で白
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(0),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          backgroundColor: Colors.white,
+          foregroundColor: AppColors.primaryColor,
+        ),
+        onPressed: () {
+          showModalBottomSheet(
+            barrierColor: Colors.black.withOpacity(0),
+            context: context,
+            isDismissible: true,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) {
+              return const PlaceListPage();
+            },
+          );
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.format_list_bulleted,
+                color: AppColors.primaryColor,
+                size: 25,
+              ),
+              SizedBox(width: 8),
+              Text(
+                "店舗一覧",
+                style: TextStyle(color: AppColors.greyDarkColor),
+              )
+            ],
           ),
         ),
       ),
@@ -149,13 +346,11 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         child: GestureDetector(
           child: AbsorbPointer(
             child: Container(
+              margin: const EdgeInsets.all(16),
               //モーダル風UIの中身
               decoration: BoxDecoration(
                 color: AppColors.whiteColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 boxShadow: [
                   BoxShadow(
                       blurRadius: 16, color: Colors.black.withOpacity(0.2))
@@ -164,49 +359,39 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(
-                      color: AppColors.greyColor,
-                      width: 1,
+                child: Row(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          gradient: LinearGradient(
+                              begin: FractionalOffset.topLeft,
+                              end: FractionalOffset.bottomRight,
+                              colors: [
+                                AppColors.tabBarColor,
+                                Colors.amber,
+                              ],
+                              stops: [
+                                0.0,
+                                1.0,
+                              ])),
+                      child: const Icon(
+                        AppIcons.search,
+                        color: AppColors.whiteColor,
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            gradient: LinearGradient(
-                                begin: FractionalOffset.topLeft,
-                                end: FractionalOffset.bottomRight,
-                                colors: [
-                                  AppColors.tabBarColor,
-                                  Colors.amber,
-                                ],
-                                stops: [
-                                  0.0,
-                                  1.0,
-                                ])),
-                        child: const Icon(
-                          AppIcons.search,
-                          color: AppColors.whiteColor,
+                    const Padding(
+                      padding: EdgeInsets.only(left: 12),
+                      child: Text(
+                        "お店の 検索 / 登録",
+                        style: TextStyle(
+                          color: Color.fromARGB(154, 0, 0, 0),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 12),
-                        child: Text(
-                          "お店の 検索 / 登録",
-                          style: TextStyle(
-                            color: Color.fromARGB(154, 0, 0, 0),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -257,7 +442,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                           LatLng(shop.shopLatitude, shop.shopLongitude);
                       //ピンの位置に移動する
                       final deviceHeight = MediaQuery.of(context).size.height;
-                      _moveToPin(latLng, (deviceHeight - 150) * 0.2);
+                      _moveToPin(latLng, (deviceHeight - 150) * 0.15);
                     }
                   });
                 }
@@ -270,7 +455,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   });
                   //mapをスクロールする
                   final deviceHeight = MediaQuery.of(context).size.height;
-                  _moveToPin(paResult.latlng, (deviceHeight - 150) * 0.2);
+                  _moveToPin(paResult.latlng, (deviceHeight - 150) * 0.15);
                   showModalBottomSheet(
                     barrierColor: Colors.black.withOpacity(0),
                     isDismissible: true,
@@ -293,7 +478,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                         if (shop != null) {
                           final latLng =
                               LatLng(shop.shopLatitude, shop.shopLongitude);
-                          _moveToPin(latLng, (deviceHeight - 150) * 0.2);
+                          _moveToPin(latLng, (deviceHeight - 150) * 0.15);
                           //初回投稿
                           showModalBottomSheet(
                             barrierColor: Colors.black.withOpacity(0),
@@ -352,7 +537,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                   if (shop != null) {
                     //マップを自動スクロールする
                     final deviceHeight = MediaQuery.of(context).size.height;
-                    _moveToPin(latLng, (deviceHeight - 150) * 0.2);
+                    _moveToPin(latLng, (deviceHeight - 150) * 0.15);
                     HapticFeedback.heavyImpact();
                     //300ms後にモーダルを表示する
                     Future.delayed(const Duration(milliseconds: 300), () {
@@ -472,7 +657,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
         final latLng = LatLng(shop.shopLatitude, shop.shopLongitude);
 
         final deviceHeight = MediaQuery.of(context).size.height;
-        _moveToPin(latLng, deviceHeight * 0.1);
+        _moveToPin(latLng, deviceHeight * 0.15);
       }
     });
     setState(() {

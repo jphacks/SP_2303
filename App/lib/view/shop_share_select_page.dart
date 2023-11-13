@@ -40,7 +40,7 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("友達に教えたいお店を選択"),
+        title: const Text("お店トレード"),
         foregroundColor: AppColors.blackTextColor,
         backgroundColor: AppColors.whiteColor,
       ),
@@ -170,7 +170,7 @@ class _ListArea extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Text(
-            "最大$maxSelectNum店舗まで選択できます",
+              "QRコードを使って、あなたの友達とお気に入りのお店を交換し、新たな食を発見してみしょう！\nお店は最大$maxSelectNum店舗まで選択できます。",
             style: TextStyle(fontSize: 14, color: AppColors.greyDarkColor),
           ),
         ),
@@ -179,7 +179,7 @@ class _ListArea extends StatelessWidget {
             alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text("行った店舗はありません"),
+              child: Text("行ったお店はありません"),
             ),
           ),
         for (var shop in filteredShops) ...[

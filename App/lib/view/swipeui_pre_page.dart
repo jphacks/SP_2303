@@ -52,7 +52,7 @@ class SwipeUIPrePageState extends ConsumerState<SwipeUIPrePage> {
                   const Padding(
                     padding: EdgeInsets.fromLTRB(24, 16, 24, 0),
                     child: Text(
-                      "他のユーザが投稿した、あなたの地域のおすすめの飲食店が紹介されます。気になったものを選んでマップに追加しましょう。",
+                      "他のユーザが投稿した、あなたの地域のおすすめの飲食店が紹介されます。気になった料理を選んで、行ってみたいお店をマップに追加し、新たな食を発見してみましょう。",
                     ),
                   ),
                 ],
