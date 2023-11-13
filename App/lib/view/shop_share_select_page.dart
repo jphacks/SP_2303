@@ -170,7 +170,7 @@ class _ListArea extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Text(
-              "QRコードを使って、あなたの友達とお気に入りのお店を交換し、新たな食を発見してみしょう！\nお店は最大$maxSelectNum店舗まで選択できます。",
+              "QRコードを使って、あなたの友達とお気に入りのお店を交換し、新たな食を発見してみましょう！\nお店は最大$maxSelectNum店舗まで選択できます。",
             style: TextStyle(fontSize: 14, color: AppColors.greyDarkColor),
           ),
         ),
