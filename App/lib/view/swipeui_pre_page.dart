@@ -242,7 +242,7 @@ class SwipeUIPrePageState extends ConsumerState<SwipeUIPrePage> {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 3));
+          timeLimit: const Duration(seconds: 5));
       currentLocation = LatLng(position.latitude, position.longitude);
     } catch (e) {
       if (context.mounted) {
