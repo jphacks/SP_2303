@@ -179,7 +179,7 @@ class SwipeUIPrePageState extends ConsumerState<SwipeUIPrePage> {
                 var currentLocation = await getCurrentLocation();
                 var (result, msg) = await APIService.requestSwipeAPI(
                     currentLocation,
-                    10000000,
+                    50,
                     await ref.watch(userProvider)?.getIdToken());
                 if (msg != "" && mounted) {
                   showCupertinoDialog(
