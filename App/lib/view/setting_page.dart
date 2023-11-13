@@ -99,7 +99,7 @@ class SettingPage extends ConsumerWidget {
           );
         });
     //キャンセルが押されたら
-    if (action == 1) {
+    if (action != 0) {
       return;
     }
     //アカウント削除APIを叩く
