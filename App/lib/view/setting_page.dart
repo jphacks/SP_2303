@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/utils/apis.dart';
 import 'package:gohan_map/utils/auth_service.dart';
 import 'package:gohan_map/utils/auth_state.dart';
@@ -33,8 +34,11 @@ class SettingPage extends ConsumerWidget {
               service.signOut().then((result) => onLogout(result, context));
             },
             child: CupertinoFormRow(
-              prefix: const Text("ログアウト"),
-              helper: Text("$name さんが $provider でログイン中"),
+              prefix: const Text(
+                "ログアウト",
+              ),
+              helper: Text("$name さんが $provider でログイン中",
+                  style: const TextStyle(fontSize: 14)),
               child: Container(),
             ),
           ),
@@ -44,7 +48,8 @@ class SettingPage extends ConsumerWidget {
             },
             child: CupertinoFormRow(
               prefix: const Text("退会する"),
-              helper: const Text("アカウントを完全に削除し、アップロード済みの画像を削除します。"),
+              helper: const Text("アカウントを完全に削除し、アップロード済みの画像を削除します。",
+                  style: TextStyle(fontSize: 14)),
               child: Container(),
             ),
           ),
@@ -55,11 +60,14 @@ class SettingPage extends ConsumerWidget {
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text("設定", style: TextStyle(fontWeight: FontWeight.bold)),
-        // 白
-        backgroundColor: Color(0xFFFFFFFF),
+
       ),
-      child: ListView(
-        children: listTiles,
+      child: Container(
+        color: CupertinoColors.systemGroupedBackground,
+        height: double.infinity,
+        child: ListView(
+          children: listTiles,
+        ),
       ),
     );
   }
