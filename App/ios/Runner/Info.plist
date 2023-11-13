@@ -44,6 +44,8 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>io.flutter.embedded_views_preview</key>
+    <true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access for uploading photos.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -73,5 +75,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_mpconn._tcp</string>
+	</array>
+	<key>UIRequiresPersistentWiFi</key>
+	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>flutter_nearby_connection</string>
 </dict>
 </plist>

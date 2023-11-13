@@ -78,6 +78,8 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   http_parser: ^4.0.2
   sign_in_with_apple: ^5.0.0
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
 
 dev_dependencies:
   flutter_test:

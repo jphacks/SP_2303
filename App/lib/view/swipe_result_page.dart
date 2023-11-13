@@ -117,7 +117,8 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                   ),
                   //オレンジ色の登録ボタン
                   //TweenAnimationBuilder
-                  _RegisterButton(
+                  BottomButton(
+                    text: "$cnt件のお店を登録する",
                     isShow: (candidates.any((element) => element.isPicked!)),
                     cnt:
                         cnt,
@@ -180,12 +181,15 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
   }
 }
 
-class _RegisterButton extends StatelessWidget {
-  const _RegisterButton({
+class BottomButton extends StatelessWidget {
+  const BottomButton({
+    super.key,
+    required this.text,
     required this.isShow,
     required this.onPressed,
     required this.cnt,
   });
+  final String text;
   final int cnt;
   final bool isShow;
   final VoidCallback onPressed;
@@ -218,20 +222,10 @@ class _RegisterButton extends StatelessWidget {
               child: Stack(
                 children: [
                   Text(
-                    "$cnt件のお店を登録する",
+                    text,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                    ),
-                  ),
-                  Opacity(
-                    opacity: 1 - value,
-                    child: const Text(
-                      "登録する",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
                     ),
                   ),
                 ],

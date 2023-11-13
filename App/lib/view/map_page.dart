@@ -17,11 +17,11 @@ import 'package:gohan_map/icon/app_icon_icons.dart';
 import 'package:gohan_map/utils/apis.dart';
 import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/utils/map_pins.dart';
-import 'package:gohan_map/utils/safearea_utils.dart';
 import 'package:gohan_map/view/place_create_page.dart';
 import 'package:gohan_map/view/place_detail_page.dart';
 import 'package:gohan_map/view/place_post_page.dart';
 import 'package:gohan_map/view/place_search_page.dart';
+import 'package:gohan_map/view/shop_share_select_page.dart';
 import 'package:isar/isar.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -85,8 +85,56 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
           pins: pins,
           mapController: mapController,
         ),
+        buildShareWidget(),
         buildDummySearchWidget(),
       ],
+    );
+  }
+
+  //共有ボタン
+  Widget buildShareWidget() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 20, bottom: 150),
+          child: SizedBox(
+            width: 120,
+            height: 60,
+            child: ElevatedButton(
+                //角丸で白
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(0),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.primaryColor,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ShopShareSelectPage()));
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      AppIcons.share,
+                      color: AppColors.primaryColor,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "お店共有",
+                      style: TextStyle(color: AppColors.greyDarkColor),
+                    )
+                  ],
+                )),
+          ),
+        ),
+      ),
     );
   }
 
