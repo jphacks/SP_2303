@@ -22,6 +22,7 @@ from app.models import *
 from app.settings import SYSTEM_MEDIA_PATH
 from app.types.fireabase import UserInfo
 from main import app
+from tests.client import CustomTestClient
 
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
 if TEST_DATABASE_URL == "":
@@ -29,13 +30,13 @@ if TEST_DATABASE_URL == "":
 
 
 @pytest.fixture(scope="session", autouse=True)
-def delete_test_media_dir() -> None:
+def delete_test_media_dir() -> Generator[None, None, None]:
     yield
     shutil.rmtree(SYSTEM_MEDIA_PATH)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def init_detabase() -> None:
+def init_detabase() -> Generator[None, None, None]:
     # データベースの初期化
     if database_exists(TEST_DATABASE_URL):
         drop_database(TEST_DATABASE_URL)
@@ -47,8 +48,8 @@ def init_detabase() -> None:
 
 
 @pytest.fixture(scope="function")
-def client() -> TestClient:
-    client = TestClient(app)
+def client() -> Generator[CustomTestClient, None, None]:
+    client = CustomTestClient(TestClient(app))
     engine = create_engine(TEST_DATABASE_URL, echo=False)
     sessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 

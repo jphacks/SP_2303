@@ -5,6 +5,7 @@ from app.types.client_response import (
     AnonymousPostImage,
     GoogleMapShop,
     SwipePost,
+    User,
 )
 
 
@@ -38,9 +39,23 @@ def equal_swipe_post(a1: SwipePost, a2: SwipePost) -> None:
     equal_google_map_shop(a1["googleMapShop"], a2["googleMapShop"])
 
 
-def exist_media_image(imagePath: str) -> None:
+def equal_user(a1: User, a2: User) -> None:
+    assert a1["name"] == a2["name"]
+    assert a1["userId"] == a2["userId"]
+    assert a1["iconKind"] == a2["iconKind"]
+
+
+def should_exist_media_image(imagePath: str) -> None:
     # imagePathがルート始まりの場合、joinが上手くできないので一度分解して結合する
     pathList = ["tests"]
     pathList.extend(imagePath.split("/"))
     imageSystemPath = os.path.join(*pathList)
-    assert os.path.exists(imageSystemPath) == True
+    assert os.path.exists(imageSystemPath)
+
+
+def should_not_exist_media_image(imagePath: str) -> None:
+    # imagePathがルート始まりの場合、joinが上手くできないので一度分解して結合する
+    pathList = ["tests"]
+    pathList.extend(imagePath.split("/"))
+    imageSystemPath = os.path.join(*pathList)
+    assert not os.path.exists(imageSystemPath)

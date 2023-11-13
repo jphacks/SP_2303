@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
+from starlette.responses import Response
 
 import app.schema.anonymous_post as post_schema
 from app.crud import anonymous_post
@@ -29,7 +30,9 @@ async def list_anonymous_post(
     return postSchemaList
 
 
-@router.post("/api/anonymous-post", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/api/anonymous-post", status_code=status.HTTP_201_CREATED, response_class=Response
+)
 async def create_anonymous_post(
     timelineId: int = Form(),
     googleMapShopId: str = Form(),

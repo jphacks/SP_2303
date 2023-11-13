@@ -32,3 +32,11 @@ class SwipePost(TypedDict):
     imageURL: str
     star: float
     googleMapShop: GoogleMapShop
+
+
+class User(TypedDict):
+    userId: str
+    name: str
+    iconKind: int
+    createdAt: str
+    updatedAt: str

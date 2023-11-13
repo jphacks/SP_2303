@@ -30,7 +30,7 @@ httpx = "^0.25.1"
 serve = "uvicorn main:app --reload"
 format = "bash -c 'isort . && black .'"
 format-check = "bash -c 'isort --check . && black --check .'"
-type = "mypy app/"
+type = "mypy app/ tests/"
 
 [tool.isort]
 profile = "black"
