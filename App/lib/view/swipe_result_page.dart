@@ -303,7 +303,7 @@ class _SwipeResCard extends StatelessWidget {
                             IgnorePointer(
                               ignoring: true,
                               child: AppRatingBar(
-                                initialRating: 4,
+                                initialRating: candidates[index].star,
                                 onRatingUpdate: (rating) {},
                                 itemSize: 20,
                               ),
