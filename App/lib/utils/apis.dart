@@ -61,6 +61,100 @@ Future<List<PlaceApiRestaurantResult>> searchRestaurantsByGoogleMapApi(
   return result;
 }
 
+//anonymous_post_get用API
+// [
+//   {
+//     "id": 0,
+//     "userId": "string",
+//     "timelineId": 0,
+//     "googleMapShopId": "string",
+//     "star": 0,
+//     "imageList": [
+//       {
+//         "id": 0,
+//         "anonymousPostId": 0,
+//         "imageURL": "string",
+//         "createdAt": "2023-11-13T08:39:47.868Z",
+//         "updatedAt": "2023-11-13T08:39:47.868Z"
+//       }
+//     ],
+//     "createdAt": "2023-11-13T08:39:47.868Z",
+//     "updatedAt": "2023-11-13T08:39:47.868Z"
+//   }
+// ]
+class AnonymousPostAPIResult {
+  final int id;
+  final String userId;
+  final int timelineId;
+  final String googleMapShopId;
+  final double star;
+  final List<ApiImageData> imageList;
+  final String createdAt;
+  final String updatedAt;
+
+  AnonymousPostAPIResult(
+      {required this.id,
+      required this.userId,
+      required this.timelineId,
+      required this.googleMapShopId,
+      required this.star,
+      required this.imageList,
+      required this.createdAt,
+      required this.updatedAt});
+
+  factory AnonymousPostAPIResult.fromJson(Map<String, dynamic> data) {
+    int idResult = data["id"];
+    String userIdResult = data["userId"];
+    int timelineIdResult = data["timelineId"];
+    String googleMapShopIdResult = data["googleMapShopId"];
+    double starResult = data["star"];
+    List<ApiImageData> imageListResult = [];
+    for (var item in data["imageList"]) {
+      imageListResult.add(ApiImageData.fromJson(item));
+    }
+    String createdAtResult = data["createdAt"];
+    String updatedAtResult = data["updatedAt"];
+    return AnonymousPostAPIResult(
+        id: idResult,
+        userId: userIdResult,
+        timelineId: timelineIdResult,
+        googleMapShopId: googleMapShopIdResult,
+        star: starResult,
+        imageList: imageListResult,
+        createdAt: createdAtResult,
+        updatedAt: updatedAtResult);
+  }
+}
+
+class ApiImageData {
+  final int id;
+  final int anonymousPostId;
+  final String imageURL;
+  final String createdAt;
+  final String updatedAt;
+
+  ApiImageData(
+      {required this.id,
+      required this.anonymousPostId,
+      required this.imageURL,
+      required this.createdAt,
+      required this.updatedAt});
+
+  factory ApiImageData.fromJson(Map<String, dynamic> data) {
+    int idResult = data["id"];
+    int anonymousPostIdResult = data["anonymousPostId"];
+    String imageURLResult = data["imageURL"];
+    String createdAtResult = data["createdAt"];
+    String updatedAtResult = data["updatedAt"];
+    return ApiImageData(
+        id: idResult,
+        anonymousPostId: anonymousPostIdResult,
+        imageURL: imageURLResult,
+        createdAt: createdAtResult,
+        updatedAt: updatedAtResult);
+  }
+}
+
 //SwipeUI用API
 class SwipeUIAPIResult {
   final String name;
@@ -143,6 +237,31 @@ class PostAPIRequest {
 // アプリのAPIを叩くためのクラス
 //
 class APIService {
+  static Future<(List<AnonymousPostAPIResult>, String)> requestAnonymousAPI(
+      String? token) async {
+    const String apiUrl = 'https://gohanmap.almikan.com/api/anonymous-post';
+    List<AnonymousPostAPIResult> result = [];
+    try {
+      var response = await client.get(Uri.parse(apiUrl), headers: {
+        'Authorization': 'Bearer $token',
+      });
+      if (response.statusCode != 200) {
+        throw json.decode(response.body)["detail"];
+      }
+      final responseData = json.decode(utf8.decode(response.bodyBytes));
+      for (var item in responseData) {
+        result.add(AnonymousPostAPIResult.fromJson(item));
+      }
+    } catch (e) {
+      logger.e(e);
+      return (result, e.toString());
+    }
+    if (result.isEmpty) {
+      return (result, "投稿がありませんでした..");
+    }
+    return (result, "");
+  }
+
   static Future<(List<SwipeUIAPIResult>, String)> requestSwipeAPI(
       LatLng latlng, int radius, String? token) async {
     final String apiUrl =

@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/icon/app_icon_icons.dart';
+import 'package:gohan_map/utils/apis.dart';
+import 'package:gohan_map/utils/auth_state.dart';
 import 'package:gohan_map/utils/isar_utils.dart';
 import 'package:gohan_map/view/shop_share_page.dart';
 import 'package:gohan_map/view/swipe_result_page.dart';
 
-class ShopShareSelectPage extends StatefulWidget {
+class ShopShareSelectPage extends ConsumerStatefulWidget {
   //StatefulWidgetは状態を持つWidget。検索結果を表示するために必要。
   const ShopShareSelectPage({Key? key}) : super(key: key);
   final int maxSelectNum = 4;
   @override
-  State<ShopShareSelectPage> createState() => _ShopShareSelectPageState();
+  ConsumerState<ShopShareSelectPage> createState() =>
+      _ShopShareSelectPageState();
 }
 
-class _ShopShareSelectPageState extends State<ShopShareSelectPage> {
+class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
   List<Shop> shopList = [];
   List<bool> selectedList = [];
   @override
@@ -73,19 +77,23 @@ class _ShopShareSelectPageState extends State<ShopShareSelectPage> {
     );
   }
 
-  void onPressConfirm() {
+  Future<void> onPressConfirm() async {
     List<Shop> selectedShops = [];
     for (var i = 0; i < selectedList.length; i++) {
       if (selectedList[i]) {
         selectedShops.add(shopList[i]);
       }
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ShopSharePage(),
-      ),
-    );
+    final (apiRes, msg) = await APIService.requestAnonymousAPI(
+        await ref.watch(userProvider)?.getIdToken());
+    print(apiRes.length);
+    print(msg);
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => ShopSharePage(),
+    //   ),
+    // );
   }
 }
 

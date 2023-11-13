@@ -63,6 +63,12 @@ class _ShopSharePageState extends State<ShopSharePage> {
   }
 
   @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
