@@ -526,8 +526,8 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             transform: Matrix4.diagonal3Values(
-                tapFlgs[shop?.id] == true ? 1.3 : 1,
-                tapFlgs[shop?.id] == true ? 1.3 : 1,
+                tapFlgs[shop?.id] == true ? 2 : 1,
+                tapFlgs[shop?.id] == true ? 2 : 1,
                 1),
             transformAlignment: Alignment.bottomCenter,
             child: GestureDetector(
@@ -578,7 +578,7 @@ class MapPageState extends State<MapPage> with TickerProviderStateMixin {
                           strokeWidth: 2,
                           strokeColor: AppColors.whiteColor,
                           child: Text(
-                            shop.shopName,
+                            tapFlgs[shop.id] == true ? "" : shop.shopName,
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
