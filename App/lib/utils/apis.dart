@@ -296,10 +296,10 @@ class APIService {
       debugPrint(request.fields.toString());
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-      final Map<String, dynamic>? responseData =
-          json.decode(utf8.decode(response.bodyBytes));
+      // 正常の場合は空文字がレスポンスされるので、json.decodeをしない
       if (response.statusCode != 201) {
-        //throw json.decode(response.body);
+        final Map<String, dynamic>? responseData =
+            json.decode(utf8.decode(response.bodyBytes));
         throw responseData!["detail"];
       }
       return "";

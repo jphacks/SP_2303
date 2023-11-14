@@ -43,3 +43,4 @@ poetry/core/*
 .env
 firebaseAdminKey.json
 /app/media
+tests/media

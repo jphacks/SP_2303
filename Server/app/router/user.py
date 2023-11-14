@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from starlette.responses import Response
 
 from app.crud import user as user_crud
 from app.db import get_db
@@ -31,7 +32,11 @@ async def get_user(
 
 
 # ユーザー作成
-@router.post("/api/user", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/api/user",
+    status_code=status.HTTP_201_CREATED,
+    response_class=Response,
+)
 async def create_user(
     body: UserCreate,
     db: Session = Depends(get_db),
@@ -45,7 +50,7 @@ async def create_user(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail=f"User already exists"
         )
-    return user_crud.create_user(
+    user_crud.create_user(
         db,
         uid,
         body.name,
@@ -54,7 +59,11 @@ async def create_user(
 
 
 # ユーザーidからユーザー情報を更新
-@router.put("/api/user", status_code=status.HTTP_200_OK)
+@router.put(
+    "/api/user",
+    status_code=status.HTTP_200_OK,
+    response_class=Response,
+)
 async def update_user(
     body: UserCreate,
     db: Session = Depends(get_db),
@@ -68,10 +77,13 @@ async def update_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found"
         )
-    return user_crud.update_user(db, uid, body.name, body.iconKind)
+    user_crud.update_user(db, uid, body.name, body.iconKind)
 
 
-@router.delete("/api/user/withdraw", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/api/user/withdraw",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_anonymous_post_and_image(
     db: Session = Depends(get_db),
     cred: UserInfo = Depends(get_current_user),

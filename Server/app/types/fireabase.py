@@ -1,6 +1,7 @@
-from typing import TypedDict
+from typing import Any, TypedDict
 
 
+# JSONの型と同じ名前なのでスネークケースになる
 class UserInfo(TypedDict):
     name: str
     picture: str
@@ -11,6 +12,5 @@ class UserInfo(TypedDict):
     sub: str
     iat: int
     exp: int
-    email: str
-    email_verified: bool
+    firebase: Any
     uid: str
