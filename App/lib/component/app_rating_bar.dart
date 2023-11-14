@@ -30,19 +30,22 @@ class AppRatingBar extends StatelessWidget {
         onRatingUpdate: onRatingUpdate,
         ratingWidget: RatingWidget(
           full: Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.all(4),
-            child: SvgPicture.asset(
-              "images/stars/all.svg",
-              height: 40,
-              width: 40,
+            // width: 40,
+            // height: 40,
+            //margin: const EdgeInsets.all(0),
+            child: FittedBox(
+              fit: BoxFit.scaleDown, //こちらを追加
+              child: SvgPicture.asset(
+                "images/stars/all.svg",
+                height: 44,
+                width: 44,
+              ),
             ),
           ),
           half: Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.all(4),
+            // width: 40,
+            // height: 40,
+            //margin: const EdgeInsets.all(0),
             child: SvgPicture.asset(
               "images/stars/half.svg",
               height: 40,
@@ -50,9 +53,9 @@ class AppRatingBar extends StatelessWidget {
             ),
           ),
           empty: Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.all(4),
+            // width: 40,
+            // height: 40,
+            //margin: const EdgeInsets.all(0),
             child: SvgPicture.asset(
               "images/stars/none.svg",
               height: 40,

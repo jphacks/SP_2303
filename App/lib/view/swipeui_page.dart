@@ -397,7 +397,7 @@ class AnonymousPostCard extends StatelessWidget {
                       child: AppRatingBar(
                         initialRating: candidate.star,
                         onRatingUpdate: (rating) {},
-                        itemSize: 20,
+                        itemSize: 25,
                       ),
                     ),
                   ],

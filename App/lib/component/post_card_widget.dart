@@ -133,7 +133,7 @@ class PostCardWidget extends StatelessWidget {
             child: AppRatingBar(
               initialRating: timeline.star,
               onRatingUpdate: (rating) {},
-              itemSize: 32,
+              itemSize: 35,
             ),
           ),
         )

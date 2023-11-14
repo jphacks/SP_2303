@@ -311,7 +311,7 @@ class _SwipeResCard extends StatelessWidget {
                               child: AppRatingBar(
                                 initialRating: 4,
                                 onRatingUpdate: (rating) {},
-                                itemSize: 20,
+                                itemSize: 25,
                               ),
                             ),
                           ],
