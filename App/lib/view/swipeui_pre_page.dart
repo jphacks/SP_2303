@@ -52,7 +52,7 @@ class SwipeUIPrePageState extends ConsumerState<SwipeUIPrePage> {
                   const Padding(
                     padding: EdgeInsets.fromLTRB(24, 16, 24, 0),
                     child: Text(
-                      "他のユーザが投稿した、あなたの地域のおすすめの飲食店が紹介されます。気になったものを選んでマップに追加しましょう。",
+                      "他のユーザが投稿した、あなたの地域のおすすめの飲食店が紹介されます。気になった料理を選んで、行ってみたいお店をマップに追加し、新たな食を発見してみましょう。",
                     ),
                   ),
                 ],
@@ -179,7 +179,7 @@ class SwipeUIPrePageState extends ConsumerState<SwipeUIPrePage> {
                 var currentLocation = await getCurrentLocation();
                 var (result, msg) = await APIService.requestSwipeAPI(
                     currentLocation,
-                    10000000,
+                    50,
                     await ref.watch(userProvider)?.getIdToken());
                 if (msg != "" && mounted) {
                   showCupertinoDialog(
@@ -242,7 +242,7 @@ class SwipeUIPrePageState extends ConsumerState<SwipeUIPrePage> {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high,
-          timeLimit: const Duration(seconds: 3));
+          timeLimit: const Duration(seconds: 5));
       currentLocation = LatLng(position.latitude, position.longitude);
     } catch (e) {
       if (context.mounted) {

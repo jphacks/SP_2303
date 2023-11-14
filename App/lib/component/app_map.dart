@@ -49,7 +49,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
     SharedPreferences.getInstance().then((pref) {
       setState(() {
         currentTileURL = pref.getString("currentTileURL") ??
-            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png";
+            "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png";
       });
     });
     //アニメーションの定義
@@ -162,38 +162,10 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
             }),
         //右下のボタン
         Positioned(
-          top: 60,
+          top: 120,
           right: 20,
           child: Column(
             children: [
-              //ヘルプボタン
-              // SizedBox(
-              //   width: 44,
-              //   height: 44,
-              //   child: ElevatedButton(
-              //     //角丸で白
-              //     style: ElevatedButton.styleFrom(
-              //       padding: const EdgeInsets.all(0),
-              //       shape: const RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.all(Radius.circular(10)),
-              //       ),
-              //       backgroundColor: Colors.white,
-              //       foregroundColor: AppColors.primaryColor,
-              //     ),
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => const TutorialPage(),
-              //         ),
-              //       );
-              //     },
-              //     child: const Icon(Icons.help),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 8,
-              // ),
               //現在地に戻るボタン
               SizedBox(
                 width: 44,
@@ -262,52 +234,6 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
                 ),
               ),
             ],
-          ),
-        ),
-        Positioned(
-          bottom: 100,
-          right: 20,
-          child: SizedBox(
-            width: 120,
-            height: 44,
-            child: ElevatedButton(
-                //角丸で白
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(0),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.primaryColor,
-                ),
-                onPressed: () {
-                  showModalBottomSheet(
-                    barrierColor: Colors.black.withOpacity(0),
-                    context: context,
-                    isDismissible: true,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) {
-                      return PlaceListPage(
-                        mapController: widget.mapController!,
-                      );
-                    },
-                  );
-                },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.format_list_bulleted,
-                      color: AppColors.primaryColor,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      "店舗一覧",
-                      style: TextStyle(color: AppColors.greyDarkColor),
-                    )
-                  ],
-                )),
           ),
         ),
       ],

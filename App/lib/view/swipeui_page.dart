@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:math' as math;
 
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/Material.dart';
@@ -30,6 +29,7 @@ class SwipeUIPageState extends State<SwipeUIPage> {
   @override
   void initState() {
     for (var result in widget.results) {
+      print(result.imageURL);
       //String img to Image
       candidates.add(CandidateModel(
         googlePlaceId: result.googleMapShopId,

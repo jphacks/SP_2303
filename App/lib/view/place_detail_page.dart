@@ -294,7 +294,9 @@ class _PlaceDetailPageState extends ConsumerState<PlaceDetailPage> {
                             res = await APIService.requestDeleteAPI(timeline.id,
                                 await ref.watch(userProvider)?.getIdToken());
                           }
-                          if (res.isNotEmpty && context.mounted) {
+                          if (res.isNotEmpty &&
+                              res != "Post not found" &&
+                              context.mounted) {
                             showCupertinoDialog(
                               context: context,
                               builder: (context) {

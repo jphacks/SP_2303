@@ -96,7 +96,7 @@ class LoginPage extends StatelessWidget {
                         height: 36,
                       ),
                       const Text(
-                        "アプリを使用するにはGoogleアカウントでログインする必要があります",
+                        "アプリを使用するにはログインする必要があります",
                       ),
                       const SizedBox(height: 16),
                       //iOSのみ

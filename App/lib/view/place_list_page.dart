@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_modal.dart';
@@ -10,10 +9,9 @@ import 'package:gohan_map/utils/isar_utils.dart';
 enum ToggleState { visited, wantToGo }
 
 class PlaceListPage extends StatefulWidget {
-  final MapController mapController;
 
   //StatefulWidgetは状態を持つWidget。検索結果を表示するために必要。
-  const PlaceListPage({Key? key, required this.mapController})
+  const PlaceListPage({Key? key})
       : super(key: key);
 
   @override

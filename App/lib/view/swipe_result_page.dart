@@ -117,7 +117,8 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
                   ),
                   //オレンジ色の登録ボタン
                   //TweenAnimationBuilder
-                  _RegisterButton(
+                  BottomButton(
+                    text: "$cnt件のお店を登録する",
                     isShow: (candidates.any((element) => element.isPicked!)),
                     cnt:
                         cnt,
@@ -180,14 +181,19 @@ class _SwipeResultPageState extends State<SwipeResultPage> {
   }
 }
 
-class _RegisterButton extends StatelessWidget {
-  const _RegisterButton({
+class BottomButton extends StatelessWidget {
+  const BottomButton({
+    super.key,
+    required this.text,
     required this.isShow,
     required this.onPressed,
     required this.cnt,
+    this.isLoading = false,
   });
+  final String text;
   final int cnt;
   final bool isShow;
+  final bool isLoading;
   final VoidCallback onPressed;
 
   @override
@@ -209,29 +215,29 @@ class _RegisterButton extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor:AppColors.primaryColor,
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 padding: EdgeInsets.zero,
               ),
-              onPressed: (isShow) ? onPressed : null,
-              child: Stack(
+              onPressed: (isShow && !isLoading) ? onPressed : null,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  if(isLoading)
+                    Container(
+                      width: 20,
+                      height: 20,
+                      margin: const EdgeInsets.only(right: 16),
+                      child: const CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
                   Text(
-                    "$cnt件のお店を登録する",
+                    text,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                    ),
-                  ),
-                  Opacity(
-                    opacity: 1 - value,
-                    child: const Text(
-                      "登録する",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
                     ),
                   ),
                 ],
@@ -309,7 +315,7 @@ class _SwipeResCard extends StatelessWidget {
                             IgnorePointer(
                               ignoring: true,
                               child: AppRatingBar(
-                                initialRating: 4,
+                                initialRating: candidates[index].star,
                                 onRatingUpdate: (rating) {},
                                 itemSize: 25,
                               ),
