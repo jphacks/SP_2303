@@ -188,10 +188,12 @@ class BottomButton extends StatelessWidget {
     required this.isShow,
     required this.onPressed,
     required this.cnt,
+    this.isLoading = false,
   });
   final String text;
   final int cnt;
   final bool isShow;
+  final bool isLoading;
   final VoidCallback onPressed;
 
   @override
@@ -213,14 +215,24 @@ class BottomButton extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor:AppColors.primaryColor,
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 padding: EdgeInsets.zero,
               ),
-              onPressed: (isShow) ? onPressed : null,
-              child: Stack(
+              onPressed: (isShow && !isLoading) ? onPressed : null,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  if(isLoading)
+                    Container(
+                      width: 20,
+                      height: 20,
+                      margin: const EdgeInsets.only(right: 16),
+                      child: const CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
                   Text(
                     text,
                     style: const TextStyle(

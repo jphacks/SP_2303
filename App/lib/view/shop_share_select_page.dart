@@ -23,6 +23,7 @@ class ShopShareSelectPage extends ConsumerStatefulWidget {
 class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
   List<Shop> shopList = [];
   List<bool> selectedList = [];
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -70,6 +71,7 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
               text:
                   "${selectedList.where((element) => element).length}件のお店を交換する",
               isShow: (selectedList.any((element) => element)),
+              isLoading: isLoading,
               cnt: selectedList.where((element) => element).length,
               onPressed: onPressConfirm,
             ),
@@ -81,6 +83,7 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
 
   //交換するお店を決定したら
   Future<void> onPressConfirm() async {
+
     List<ShareShop> selectedShops = [];
     for (var i = 0; i < selectedList.length; i++) {
       if (selectedList[i]) {
@@ -97,8 +100,14 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
         );
       }
     }
+    setState(() {
+      isLoading = true;
+    });
     final (apiRes, msg) = await APIService.requestAnonymousAPI(
         await ref.watch(userProvider)?.getIdToken());
+    setState(() {
+      isLoading = false;
+    });
     if (msg != "") {
       CupertinoAlertDialog(
         title: const Text("エラー"),
@@ -138,7 +147,9 @@ class _ShopShareSelectPageState extends ConsumerState<ShopShareSelectPage> {
         ),
       ),
     );
+
   }
+  
 }
 
 class _ListArea extends StatelessWidget {
