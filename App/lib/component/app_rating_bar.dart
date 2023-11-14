@@ -1,5 +1,6 @@
 import 'package:flutter/Material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 //レーティングのバー
 class AppRatingBar extends StatelessWidget {
@@ -29,31 +30,34 @@ class AppRatingBar extends StatelessWidget {
         onRatingUpdate: onRatingUpdate,
         ratingWidget: RatingWidget(
           full: Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.all(4),
-            child: Image.asset(
-              "images/stars/all.png",
-              height: 40,
-              width: 40,
+            // width: 40,
+            // height: 40,
+            //margin: const EdgeInsets.all(0),
+            child: FittedBox(
+              fit: BoxFit.scaleDown, //こちらを追加
+              child: SvgPicture.asset(
+                "images/stars/all.svg",
+                height: 44,
+                width: 44,
+              ),
             ),
           ),
           half: Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.all(4),
-            child: Image.asset(
-              "images/stars/half.png",
+            // width: 40,
+            // height: 40,
+            //margin: const EdgeInsets.all(0),
+            child: SvgPicture.asset(
+              "images/stars/half.svg",
               height: 40,
               width: 40,
             ),
           ),
           empty: Container(
-            width: 40,
-            height: 40,
-            margin: const EdgeInsets.all(4),
-            child: Image.asset(
-              "images/stars/none.png",
+            // width: 40,
+            // height: 40,
+            //margin: const EdgeInsets.all(0),
+            child: SvgPicture.asset(
+              "images/stars/none.svg",
               height: 40,
               width: 40,
             ),
