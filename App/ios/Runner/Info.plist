@@ -48,7 +48,7 @@
     <true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access for uploading photos.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Required to post location information when posting photos and videos.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Required to post location information when posting photos and videos.</string>
