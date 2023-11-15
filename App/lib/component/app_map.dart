@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/Cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -44,7 +45,6 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    init();
     //MapTileの読み込み
     SharedPreferences.getInstance().then((pref) {
       setState(() {
@@ -90,6 +90,12 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
           plMarkerController.repeat();
         }
       });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    initGPS(context);
   }
 
   @override
@@ -240,9 +246,39 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> init() async {
-    await checkGPSPermission();
-
+  Future<void> initGPS(BuildContext context) async {
+    try{
+       await checkGPSPermission();
+    }catch (e){
+      //GPSが許可されていない場合はCupertinoAlertDialogを表示
+      if(context.mounted){
+      showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: const Text("位置情報の取得ができません"),
+            content: const Text("設定アプリから、位置情報の使用を許可してください"),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text("キャンセル"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoDialogAction(
+                child: const Text("設定"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Geolocator.openAppSettings();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      }
+      return;
+    }
     // ユーザの現在位置を取得し続ける
     positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
