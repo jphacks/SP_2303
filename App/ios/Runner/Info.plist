@@ -44,22 +44,26 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>io.flutter.embedded_views_preview</key>
-    <true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_mpconn._tcp</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Need camera access for uploading photos.</string>
+	<string>外食の画像を記録するためにカメラを使用します</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Required to post location information when posting photos and videos.</string>
+	<string>地図に位置情報を表示したり、付近の飲食店を紹介するために使用します</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Required to post location information when posting photos and videos.</string>
+	<string>地図に位置情報を表示したり、付近の飲食店を紹介するために使用します</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Need photo library access for uploading photos.</string>
+	<string>外食の画像を記録するために使用します</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIRequiresPersistentWiFi</key>
+	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
@@ -75,13 +79,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_mpconn._tcp</string>
-	</array>
-	<key>UIRequiresPersistentWiFi</key>
+	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>flutter_nearby_connection</string>
 </dict>
 </plist>
