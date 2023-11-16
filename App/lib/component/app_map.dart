@@ -31,7 +31,7 @@ class AppMap extends StatefulWidget {
 class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
   LatLng? currentPosition;
   //SharedPreferencesから現在適応中のmaptile読み込む
-  late String currentTileURL;
+  late String currentTileURL = "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png";
   late StreamSubscription<Position> positionStream;
   bool isCurrentLocation = true;
 
@@ -100,10 +100,6 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (currentPosition == null) {
-      return const SizedBox();
-    }
-
     return Stack(
       children: [
         StreamBuilder<CompassEvent>(
@@ -121,7 +117,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
               return FlutterMap(
                 options: MapOptions(
-                  center: currentPosition,
+                  center: currentPosition ?? LatLng(35.681236, 139.767125),
                   minZoom: 3,
                   maxZoom: 18,
                   zoom: 15,
@@ -159,7 +155,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
                   MarkerLayer(
                     markers: [
                       if (compassMarker != null) compassMarker,
-                      presetLocationMarker,
+                      if (presetLocationMarker != null) presetLocationMarker,
                     ],
                     rotate: false,
                   )
@@ -312,8 +308,11 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
     }
   }
 
-  Marker _buildPresetLocationMarker() {
+  Marker? _buildPresetLocationMarker() {
     const markerSize = 24.0;
+    if(currentPosition == null){
+      return null;
+    }
     var marker = Marker(
         width: markerSize,
         height: markerSize,
@@ -343,11 +342,13 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
     return marker;
   }
 
-  Marker _buildCompassMarker(
+  Marker? _buildCompassMarker(
     double direction,
   ) {
     const markerSize = 12.0;
-
+    if (currentPosition == null) {
+      return null;
+    }
     return Marker(
         width: markerSize,
         height: markerSize / 2 * math.sqrt(3),
