@@ -2,12 +2,13 @@ import 'package:flutter/Material.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
-enum AnimationKind { normal, walk, jump }
+enum AnimationKind { normal, walk, jump , all}
 
 Map<AnimationKind, String> animationImagePath = {
   AnimationKind.normal: "images/characters/normal_close.png",
   AnimationKind.jump: "images/characters/jump.png",
-  AnimationKind.walk: "images/characters/walk.png"
+  AnimationKind.walk: "images/characters/walk.png",
+  AnimationKind.all: "images/characters/allmove.png",
 };
 
 class AppCharacter extends StatefulWidget {
@@ -26,13 +27,14 @@ class AppCharacterState extends State<AppCharacter> {
   @override
   void initState() {
     super.initState();
-    animateNormal();
+    //animateNormal();
   }
 
   @override
   Widget build(BuildContext context) {
-    var imagePath = animationImagePath[curAnimation] ?? "";
-
+    //var imagePath = animationImagePath[curAnimation] ?? "";
+    //全ての動作を1つのapngにまとめた
+    var imagePath = animationImagePath[AnimationKind.all] ?? "";
     return Image.asset(
       imagePath,
       height: 300,
