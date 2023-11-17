@@ -9,7 +9,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:gohan_map/colors/app_colors.dart';
 import 'package:gohan_map/component/app_direction_light.dart';
 import 'package:gohan_map/view/change_map_page.dart';
-import 'package:gohan_map/view/place_list_page.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,8 +29,10 @@ class AppMap extends StatefulWidget {
 
 class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
   LatLng? currentPosition;
+  bool isLoadingPosition = true;
   //SharedPreferencesから現在適応中のmaptile読み込む
-  late String currentTileURL = "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png";
+  late String currentTileURL =
+      "https://tile.openstreetmap.jp/styles/maptiler-basic-ja/{z}/{x}/{y}.png";
   late StreamSubscription<Position> positionStream;
   bool isCurrentLocation = true;
 
@@ -100,6 +101,22 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoadingPosition || widget.pins == null || widget.pins!.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("現在地を取得中..."),
+            SizedBox(
+              height: 16,
+            ),
+            CircularProgressIndicator(
+              color: AppColors.primaryColor,
+            ),
+          ],
+        ),
+      );
+    }
     return Stack(
       children: [
         StreamBuilder<CompassEvent>(
@@ -117,7 +134,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
               return FlutterMap(
                 options: MapOptions(
-                  center: currentPosition ?? LatLng(35.681236, 139.767125),
+                  center: currentPosition ?? LatLng(43.068661, 141.350755),
                   minZoom: 3,
                   maxZoom: 18,
                   zoom: 15,
@@ -243,35 +260,41 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
   }
 
   Future<void> initGPS(BuildContext context) async {
-    try{
-       await checkGPSPermission();
-    }catch (e){
+    try {
+      await checkGPSPermission();
+    } catch (e) {
       //GPSが許可されていない場合はCupertinoAlertDialogを表示
-      if(context.mounted){
-      showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: const Text("位置情報の取得ができません"),
-            content: const Text("設定アプリから、位置情報の使用を許可してください"),
-            actions: [
-              CupertinoDialogAction(
-                child: const Text("キャンセル"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              CupertinoDialogAction(
-                child: const Text("設定"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Geolocator.openAppSettings();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      if (context.mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: const Text("位置情報の取得ができません"),
+              content: const Text("設定アプリから、位置情報の使用を許可してください"),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text("キャンセル"),
+                  onPressed: () {
+                    setState(() {
+                      isLoadingPosition = false;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: const Text("設定"),
+                  onPressed: () {
+                    setState(() {
+                      isLoadingPosition = false;
+                    });
+                    Navigator.pop(context);
+                    Geolocator.openAppSettings();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
       return;
     }
@@ -281,6 +304,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
             .listen((Position position) {
       var latLng = LatLng(position.latitude, position.longitude);
       setState(() {
+        isLoadingPosition = false;
         currentPosition = latLng;
       });
     });
@@ -310,7 +334,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
   Marker? _buildPresetLocationMarker() {
     const markerSize = 24.0;
-    if(currentPosition == null){
+    if (currentPosition == null) {
       return null;
     }
     var marker = Marker(
