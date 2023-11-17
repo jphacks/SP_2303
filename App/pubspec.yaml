@@ -68,7 +68,7 @@ dependencies:
   flutter_displaymode: ^0.6.0
   google_fonts: ^4.0.4
   photo_view: ^0.14.0
-  modal_bottom_sheet: ^3.0.0-pre 
+  modal_bottom_sheet: ^3.0.0-pre
   share_plus: ^7.2.1
   calendar_date_picker2: ^0.5.3
   flutter_svg: ^2.0.7
@@ -111,6 +111,7 @@ flutter:
     - images/
     - images/pins/
     - images/stars/
+    - images/characters/
     - icon/
     - .env
   #   - images/a_dot_burr.jpeg
@@ -164,7 +165,7 @@ flutter_native_splash:
     icon_background_color_dark: "#F86F35"
     image_dark: "images/splash_umap.png"
 
-flutter_icons:       
+flutter_icons:
   android: true
   ios: true
   image_path: "images/icon.png"

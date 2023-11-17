@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gohan_map/collections/shop.dart';
 import 'package:gohan_map/collections/timeline.dart';
 import 'package:gohan_map/colors/app_colors.dart';
+import 'package:gohan_map/component/app_character.dart';
 import 'package:gohan_map/component/app_exp_dialog.dart';
 import 'package:gohan_map/utils/common.dart';
 import 'package:gohan_map/utils/isar_utils.dart';
@@ -163,10 +164,8 @@ class CharacterPageState extends State<CharacterPage> {
                     ))
               ],
             ),
-            Image.asset(
-              "images/normal_close.png",
-              height: 300,
-            ),
+            // キャラクター
+            const AppCharacter(),
             Column(children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

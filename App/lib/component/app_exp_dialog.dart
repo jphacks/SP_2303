@@ -19,9 +19,7 @@ Future getAndShowExpDialog({
           content: Column(
             children: [
               SizedBox(
-                height: 100,
-                child: Image.asset("images/eat.png"),
-              ),
+                  height: 100, child: Image.asset("images/characters/eat.png")),
               Text("経験値を$exp獲得しました"),
             ],
           ),
