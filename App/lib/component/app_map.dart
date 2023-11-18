@@ -101,7 +101,7 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoadingPosition || widget.pins == null || widget.pins!.isEmpty) {
+    if (isLoadingPosition) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -423,10 +423,10 @@ class _AppMapState extends State<AppMap> with TickerProviderStateMixin {
 
   //緯度でソート(南のピンが上に来るようにする)
   List<Marker>? sortByLat(List<Marker>? pins) {
-    if (widget.pins == null) {
+    if (pins == null) {
       return null;
     }
-    widget.pins!.sort((a, b) => b.point.latitude.compareTo(a.point.latitude));
+    pins.sort((a, b) => b.point.latitude.compareTo(a.point.latitude));
     return widget.pins;
   }
 
